@@ -1,0 +1,7 @@
+{% extends 'parent.html.twig' %}
+{% block title%} photo {%endblock%}
+{%block stylesheets%}
+    {{parent()}}    
+    <link rel="stylesheet" href="{{ asset('css/photo.css') }}" type="text/css" media="all" />
+    {%endblock%}
+{%block body%}
