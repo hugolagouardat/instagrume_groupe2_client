@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+	<div class="container">
+		<a class="navbar-brand me-5" href="/"><img class="me-2" src="{{ asset('images/logo.svg') }}" alt=""><span>Vélotaf</span>
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarLinks" aria-controls="navbarLinks" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarLinks">
+			<div class="navbar-nav">
+				<a class="nav-link me-3 {{ page == 'incidents' ? 'active' :'' }}" href="/incidents">
+					<span class="text">Incidents</span>
+				</a>
+				{% if role == 'admin' %}
+					<a class="nav-link me-3 {{ page == 'utilisateurs' ? 'active' :'' }}" href="/users">
+						<span class="text">Utilisateurs</span>
+					</a>
+				{% endif %}
+				<a class="nav-link me-3" href="/logout">
+					<span class="text">Déconnexion</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</nav>
