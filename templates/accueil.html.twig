@@ -1,13 +1,8 @@
 {% extends 'parent.html.twig' %}
-{% block title%} accueil {%endblock%}
-{%block stylesheets%}
-    {{parent()}}    
-    <link rel="stylesheet" href="{{ asset('css/accueil.css') }}" type="text/css" media="all" />
-{%endblock%}
-    {% block body%}
-        {% for photo in photos}
-            {{dump(user)}}
-        {%endfor%}
 
+    {% block content %}
+        
+       {{ dump(allPhotos) }}
+        
 
     {%endblock%}

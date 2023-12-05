@@ -60,4 +60,12 @@ class ApiLinker {
 		
 		return $content;
 	}	
+
+	public function readData($url) {
+		$response = $this->client->request('GET', $this->baseURL . $url, ['no_proxy' => '127.0.0.1']);
+		$content = $response->getContent();
+		
+		return $content;
+	}
+	
 }
