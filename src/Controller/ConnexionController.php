@@ -20,6 +20,11 @@ class ConnexionController extends AbstractController {
         $this->jsonConverter = $jsonConverter;
     }
 
+    #[Route('/login', methods: ['GET'])]
+    public function displayConnexion(){
+        return $this->render("login.html.twig");
+    }
+
     #[Route('/login', methods: ['POST'])]
     public function connexion(Request $request) {
 
@@ -34,7 +39,7 @@ class ConnexionController extends AbstractController {
             $session = $request->getSession();
             $session->set('token-session', $responseObject->token);
 
-            return $this->redirect('/incidents');
+            return $this->redirect('/accueil');
         }
 
         return $this->redirect('/login');
