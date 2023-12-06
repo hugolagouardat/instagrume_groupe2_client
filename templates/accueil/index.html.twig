@@ -1,0 +1,36 @@
+{% extends 'parent.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/accueil.css') }}" type="text/css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% for photo in allPhotos %}
+                <div class="col-md-6 col-lg-6 mb-6">
+                    <div class="card">
+                        <img src="{{ asset('images/image1.jpg') }}" class="card-img-top img-fluid" alt="Photo">
+                        <div class="card-body">
+                            <p class="card-text">Likes: {{ photo.likesCount }}</p>
+                            {% if photo.user %}
+                                <p class="card-text">Posted by: {{ photo.user.username }}</p>
+                            {% else %}
+                                <p class="card-text">Unknown User</p>
+                                <!-- Gestion si l'utilisateur est introuvable -->
+                            {% endif %}
+                            <h5 class="card-title">{{ photo.description }}</h5>
+                            <p class="card-text">{{ photo.datePoste }}</p>
+                        </div>
+
+                        {% for comment in allComments %}
+                            
+                            <p class="card-comment">{{ comment.description }}</p>
+
+                        {% endfor %}    
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

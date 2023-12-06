@@ -4,14 +4,13 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Service\JsonConverter;
 use App\Service\ApiLinker;
 
-class AccueilController extends AbstractController {
-
+class AccueilController extends AbstractController
+{
     private $jsonConverter;
     private $apiLinker;
 
@@ -20,15 +19,17 @@ class AccueilController extends AbstractController {
         $this->jsonConverter = $jsonConverter;
     }
 
-    #[Route('/accueil', name: "accueil")]
-    public function displayAccueil(Request $request) {
+    #[Route('/', name: 'app_accueil')]
+    public function displayAccueil(): Response
+    {
 
         $allPhotos = json_decode($this->apiLinker->readData("/photos"));
+        $allComments = json_decode($this->apiLinker->readData("/commentaires"));
         
-        return $this->render('accueil.html.twig', [
+        return $this->render('accueil/index.html.twig', [
             'controller_name' => 'AccueilController',
-            'allPhotos' => $allPhotos
+            'allPhotos' => $allPhotos,
+            'allComments' => $allComments
         ]);
     }
-
 }
