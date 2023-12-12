@@ -53,4 +53,52 @@ class ConnexionController extends AbstractController {
 
         return $this->redirect('/');
     }
+
+
+    #[Route('/register', methods: ['GET'])]
+    public function displayRegister(){
+        return $this->render("register.html.twig");
+    }
+    #[Route('/register', methods: ['POST'])]
+public function register(Request $request) {
+    $username = $request->request->get('username');
+    $description = $request->request->get('description');
+    $password = $request->request->get('password');
+    $passwordConfirm = $request->request->get('passwordConfirm');
+
+    // Vérification du mot de passe
+
+    if ($password !== $passwordConfirm) {
+        return $this->render("register.html.twig", ['error' => 'Les mots de passe ne correspondent pas.']);
+    }
+
+    // Gestion de l'image
+    $image = $request->files->get('avatar');
+    $imageData = file_get_contents($image->getPathname());
+    $base64 = base64_encode($imageData);
+
+    // Préparation des données à envoyer
+    $data = $this->jsonConverter->encodeToJson([
+        'username' => $username, 
+        'description' => $description,
+        'password' => $password,
+        'avatar'   => $base64
+    ]);
+
+    // Envoi des données au serveur
+    $response = $this->apiLinker->postData('/users', $data, null);
+    $responseObject = json_decode($response);
+
+    // Gestion de la réponse et redirection
+    if (isset($responseObject->success)) {
+        // Gérer la réussite de l'inscription
+        return $this->redirect('/login');
+    } else {
+        // Gérer l'échec de l'inscription
+        return $this->render("register.html.twig", ['error' => 'Erreur lors de l\'inscription.']);
+    }
+}
+
+    
+
 }
