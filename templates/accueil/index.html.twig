@@ -13,20 +13,19 @@
 						<img src="{{ asset('images/image1.jpg') }}" class="card-img" alt="Photo">
 						<div class="card-body">
 							<p class="card-text">
-                                <button class="like-button">
-                                    <img src="{{ asset('images/like.png') }}" class="image-like"> 
-                                </button>
-                                {{ photo.likesCount }}
-                                <button class="like-button">
-                                    <img src="{{ asset('images/dislike.png') }}" class="image-like dislike">
-                                </button>
-                                 {{ photo.dislikesCount }}
-                                <span class="date">{{ photo.datePoste }}</span>
-                            </p>
+								<button class="like-button" data-photo-id="{{ photo.id }}" data-action="like">
+									<img src="{{ asset('images/like.png') }}" class="image-like">
+								</button>
+								{{ photo.likesCount }}
+								<button class="like-button">
+									<img src="{{ asset('images/dislike.png') }}" class="image-like dislike">
+								</button>
+								{{ photo.dislikesCount }}
+								<span class="date">{{ photo.datePoste }}</span>
+							</p>
 
-                            
 
-                            <h5 class="card-title">{{ photo.description }}</h5>
+							<h5 class="card-title">{{ photo.description }}</h5>
 							{% if photo.user %}
 								<p class="card-text">
 									@{{ photo.user.username }}</p>
@@ -34,23 +33,44 @@
 								<p class="card-text">Unknown User</p>
 								<!-- Gestion si l'utilisateur est introuvable -->
 							{% endif %}
-							
+
 						</div>
 
-                        <div class="comments-section">
-                            <h6>Commentaires :</h6>
-                            {% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id) %}
-                            {% if commentsForPhoto|length > 0 %}
-                                {% for comment in commentsForPhoto %}
-                                    <div class="comment">
-                                        <p class="comment-text">{{ comment.description }}</p>
-                                        <span class="comment-date">{{ comment.dateCommentaire }}</span>
+						<div class="comments-section">
+							<h6>Commentaires :
+								<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
+
+							</h6>
+							{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id) %}
+							{% if commentsForPhoto|length > 0 %}
+								{% for comment in commentsForPhoto %}
+									<div class="comment">
+										<strong class="comment-user">@{{ comment.user.username }}</strong>
+										<p class="comment-text">{{ comment.description }}</p>
+										<span class="comment-date">{{ comment.dateCommentaire }}</span>
+									</div>
+								{% endfor %}
+							{% else %}
+								<p class="aucun-com">Aucun commentaire pour cette photo !</p>
+							{% endif %}
+							<div
+								class="comment-form" style="display: none;">
+								<!-- Formulaire pour ajouter un commentaire -->
+								<form
+									action="http://127.0.0.1:3000/api/photos/{{ photo.id }}/commentaires" method="POST">
+									<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+                                    <div class="boutonAjouter">
+									    <input type="submit" value="Ajouter">
                                     </div>
-                                {% endfor %}
-                            {% else %}
-                                <p class="aucun-com">Aucun commentaire pour cette photo !</p>
-                            {% endif %}
-                        </div>
+								</form>
+							</div>
+							<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+							<script>
+								function toggleCommentForm(button) {
+                                    $(button).closest('.comments-section').find('.comment-form').toggle();
+                                }
+							</script>
+						</div>
 					</div>
 				</div>
 			{% endfor %}
