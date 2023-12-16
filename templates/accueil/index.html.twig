@@ -71,9 +71,11 @@ $(button).closest('.comments-section').find('.comment-form').toggle();
 											<div class="children-comments">
 												{% for childComment in childrenComments %}
 													<div class="comment-child">
-														<strong class="comment-user">@{{ childComment.user.username }}</strong>
-														<p class="comment-text">{{ childComment.description }}</p>
-														<span class="comment-date">{{ childComment.dateCommentaire }}</span>
+														<div class="intern-comment">
+															<strong class="comment-user">@{{ childComment.user.username }}</strong>
+															<p class="comment-text">{{ childComment.description }}</p>
+															<span class="comment-date">{{ childComment.dateCommentaire }}</span>
+														</div>
 													</div>
 												{% endfor %}
 											</div>
@@ -90,10 +92,4 @@ $(button).closest('.comments-section').find('.comment-form').toggle();
 			{% endfor %}
 		</div>
 	</div>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script>
-		function toggleCommentForm(button) {
-$(button).closest('.comments-section').find('.comment-form').toggle();
-}
-	</script>
 {% endblock %}

@@ -27,23 +27,31 @@ class ConnexionController extends AbstractController {
 
     #[Route('/login', methods: ['POST'])]
     public function connexion(Request $request) {
-
         $username = $request->request->get('username');
         $password = $request->request->get('password');
-
+    
         if (!empty($username) && !empty($password)) {
             $data = $this->jsonConverter->encodeToJson(['username' => $username, 'password' => $password]);
             $response = $this->apiLinker->postData('/login', $data, null);
             $responseObject = json_decode($response);
-
-            $session = $request->getSession();
-            $session->set('token-session', $responseObject->token);
-
-            return $this->redirect('/');
+    
+            // Vérifiez si le token est récupéré avec succès
+            if (isset($responseObject->token)) {
+                // Stockez le token dans la session
+                $session = $request->getSession();
+                $session->set('token-session', $responseObject->token);
+    
+                // Redirigez vers la page d'accueil ou une autre page après la connexion réussie
+                return $this->redirect('/');
+            } else {
+                // Gérez le cas où le token n'est pas récupéré correctement
+                return $this->redirect('/login');
+            }
         }
-
+    
         return $this->redirect('/login');
     }
+    
 
     #[Route('/logout', methods: ['GET'])]
     public function deconnexion(Request $request) {
