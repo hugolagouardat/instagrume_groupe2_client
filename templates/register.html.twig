@@ -30,7 +30,7 @@
 					</div>
 				{% endif %}
 
-				<form method='POST' action='/register' enctype="multipart/form-data" class="col-lg-3 col-12 mx-auto form-connexion p-5 pt-4 mb-4">
+				<form method='POST' action='/register' enctype="multipart/form-data" class="col-lg-3 col-12 mx-auto form-connexion pt-4 mb-4">
 
 					<div class='form-group'>
 						<input type='text' class='form-control' id='identifiant' name='username' placeholder='Identifiant' required>
@@ -50,6 +50,10 @@
 					<button type='submit' class='btn btn-success mt-4 w-100'>Créer</button>
 				</form>
 
+				<div class="row">
+					<p class="col-12 text-center">Déjà un compte ? <a href="/login">Connectez-vous</a>
+					</p>
+				</div>
 			</div>
 		</div>
 	</div>

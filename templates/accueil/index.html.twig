@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+	{{ dump(actualUserName) }}
 	<div class="container with-margin">
 		<div class="row">
 			{% for photo in allPhotos %}
@@ -44,7 +45,9 @@
 							<div
 								class="comment-form" style="display: none;">
 								<!-- Formulaire pour ajouter un commentaire -->
-								<form action="http://127.0.0.1:3000/api/photos/{{ photo.id }}/commentaires" method="POST">
+								<form action="{{ path('add_comment') }}" method="POST">
+									<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+									<input type="hidden" name="comment_username" value="{{ actualUserName }}">
 									<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
 									<div class="boutonAjouter">
 										<input type="submit" value="Ajouter">
