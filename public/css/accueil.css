@@ -28,21 +28,24 @@
     gap: 30px;
 }
 
-
+.card-center {
+    display: flex;
+    justify-content: center;
+}
 
 .card {
-    width: 100%;
-    max-width: 100%; 
+    width: 90%;
+    max-width: 90%; 
     border: 1px solid #4a4a4a;
 }
 
 .card-img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 600px; /* Hauteur fixe de la carte, ajustez selon vos besoins */
+    object-fit: contain; /* Ajuste l'image pour s'adapter entièrement à l'intérieur de la carte */
     border-bottom: 1px solid #4a4a4a;
 }
+
 
 .card-text {
     display: flex;

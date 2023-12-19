@@ -10,85 +10,87 @@
 		<div class="row">
 			{% for photo in allPhotos %}
 				<div class="col-md-6 col-lg-6 mb-6">
-					<div class="card">
-						<img src="{{ asset('images/image1.jpg') }}" class="card-img" alt="Photo">
-						<div class="card-body">
-							<p class="card-text">
-								<button class="like-button" data-photo-id="{{ photo.id }}" data-action="like">
-									<img src="{{ asset('images/like.png') }}" class="image-like">
-								</button>
-								{{ photo.likesCount }}
-								<button class="like-button">
-									<img src="{{ asset('images/dislike.png') }}" class="image-like dislike">
-								</button>
-								{{ photo.dislikesCount }}
-								<span class="date">{{ photo.datePoste }}</span>
-							</p>
-
-
-							<h5 class="card-title">{{ photo.description }}</h5>
-							{% if photo.user %}
+					<div class="card-center">
+						<div class="card">
+							<img src="http://127.0.0.1:3000/images/photos/{{ photo.image }}" class="card-img" alt="Photo">
+							<div class="card-body">
 								<p class="card-text">
-									@{{ photo.user.username }}</p>
-							{% else %}
-								<p class="card-text">Unknown User</p>
-								<!-- Gestion si l'utilisateur est introuvable -->
-							{% endif %}
+									<button class="like-button" data-photo-id="{{ photo.id }}" data-action="like">
+										<img src="{{ asset('images/like.png') }}" class="image-like">
+									</button>
+									{{ photo.likesCount }}
+									<button class="like-button">
+										<img src="{{ asset('images/dislike.png') }}" class="image-like dislike">
+									</button>
+									{{ photo.dislikesCount }}
+									<span class="date">{{ photo.datePoste }}</span>
+								</p>
 
-						</div>
 
-						<div class="comments-section">
-							<h6>Commentaires :
-								<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
+								<h5 class="card-title">{{ photo.description }}</h5>
+								{% if photo.user %}
+									<p class="card-text">
+										@{{ photo.user.username }}</p>
+								{% else %}
+									<p class="card-text">Unknown User</p>
+									<!-- Gestion si l'utilisateur est introuvable -->
+								{% endif %}
 
-							</h6>
-							<div
-								class="comment-form" style="display: none;">
-								<!-- Formulaire pour ajouter un commentaire -->
-								<form action="{{ path('add_comment') }}" method="POST">
-									<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
-									<input type="hidden" name="comment_username" value="{{ actualUserName }}">
-									<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
-									<div class="boutonAjouter">
-										<input type="submit" value="Ajouter">
-									</div>
-								</form>
 							</div>
-							<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-							<script>
-								function toggleCommentForm(button) {
+
+							<div class="comments-section">
+								<h6>Commentaires :
+									<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
+
+								</h6>
+								<div
+									class="comment-form" style="display: none;">
+									<!-- Formulaire pour ajouter un commentaire -->
+									<form action="{{ path('add_comment') }}" method="POST">
+										<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+										<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+										<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+										<div class="boutonAjouter">
+											<input type="submit" value="Ajouter">
+										</div>
+									</form>
+								</div>
+								<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+								<script>
+									function toggleCommentForm(button) {
 $(button).closest('.comments-section').find('.comment-form').toggle();
 }
-							</script>
-							{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id) %}
-							{% if commentsForPhoto|length > 0 %}
-								{% for comment in commentsForPhoto %}
-									<div class="comment">
-										<strong class="comment-user">@{{ comment.user.username }}</strong>
-										<p class="comment-text">{{ comment.description }}</p>
-										<span class="comment-date">{{ comment.dateCommentaire }}</span>
+								</script>
+								{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id) %}
+								{% if commentsForPhoto|length > 0 %}
+									{% for comment in commentsForPhoto %}
+										<div class="comment">
+											<strong class="comment-user">@{{ comment.user.username }}</strong>
+											<p class="comment-text">{{ comment.description }}</p>
+											<span class="comment-date">{{ comment.dateCommentaire }}</span>
 
-										<!-- Vérification des commentaires enfants -->
-										{% set childrenComments = commentsForPhoto|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
-										{% if childrenComments is not empty %}
-											<div class="children-comments">
-												{% for childComment in childrenComments %}
-													<div class="comment-child">
-														<div class="intern-comment">
-															<strong class="comment-user">@{{ childComment.user.username }}</strong>
-															<p class="comment-text">{{ childComment.description }}</p>
-															<span class="comment-date">{{ childComment.dateCommentaire }}</span>
+											<!-- Vérification des commentaires enfants -->
+											{% set childrenComments = commentsForPhoto|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
+											{% if childrenComments is not empty %}
+												<div class="children-comments">
+													{% for childComment in childrenComments %}
+														<div class="comment-child">
+															<div class="intern-comment">
+																<strong class="comment-user">@{{ childComment.user.username }}</strong>
+																<p class="comment-text">{{ childComment.description }}</p>
+																<span class="comment-date">{{ childComment.dateCommentaire }}</span>
+															</div>
 														</div>
-													</div>
-												{% endfor %}
-											</div>
-										{% endif %}
-									</div>
-								{% endfor %}
-							{% else %}
-								<p class="aucun-com">Aucun commentaire pour cette photo !</p>
-							{% endif %}
+													{% endfor %}
+												</div>
+											{% endif %}
+										</div>
+									{% endfor %}
+								{% else %}
+									<p class="aucun-com">Aucun commentaire pour cette photo !</p>
+								{% endif %}
 
+							</div>
 						</div>
 					</div>
 				</div>
