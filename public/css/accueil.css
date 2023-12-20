@@ -57,9 +57,10 @@
     margin-left: auto; 
 }
 
+/* Gestion des likes */
 .image-like {
-    max-width: 40px;
-    max-height: 40px;
+    max-width: 30px;
+    max-height: 30px;
 }
 
 .like-button {
@@ -73,6 +74,17 @@
 .like-button:focus {
     outline: none; /* Supprime l'effet de focus par défaut sur le clic */
 }
+
+.comment-likes {
+    display: flex;
+    align-items: center;
+}
+
+.image-like-commentaire {
+    max-width: 15px;
+    max-height: 15px;
+}
+
 
 /* Style pour l'affichage des commentaires */
 .comments-section {
@@ -97,10 +109,21 @@
     font-size: 15px;
 }
 
+.comment-user-date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-user {
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px; /* Espace entre le nom d'utilisateur et la date */
+}
+
 .comment-date {
     font-size: 12px;
     color: #888;
-    margin-left: 8px;
 }
 
 .aucun-com {

@@ -36,10 +36,12 @@ class AccueilController extends AbstractController
         if ($payloadData != null) {
             $userName = $payloadData->username; // Nom de l'utilisateur
             $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
+            $userId = $this->toolFunctions->getIdByUsername($userName);
 
         } else {
             $userRole = null;
             $userName = null;
+            $userId = null;
         }
 
 
@@ -52,7 +54,8 @@ class AccueilController extends AbstractController
             'allPhotos' => $allPhotos,
             'allComments' => $allComments,
             'actualUserName' =>  $userName,
-            'actualUserRole' => $userRole
+            'actualUserRole' => $userRole,
+            'actualUserId' => $userId
         ]);
     }
 
