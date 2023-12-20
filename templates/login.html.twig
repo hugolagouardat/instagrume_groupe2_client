@@ -26,6 +26,11 @@
 					<div class='form-group mt-3'>
 						<input type='password' class='form-control' id='password' name='password' placeholder='Mot de passe' required>
 					</div>
+					{% if error is defined %}
+						<a style="color:red; display:flex; justify-content:center;">
+							{{ error }}
+						</a>
+					{% endif %}
 					<button type='submit' class='btn btn-success mt-4 w-100'>Valider</button>
 				</form>
 			</div>

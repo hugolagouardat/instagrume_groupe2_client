@@ -44,7 +44,7 @@ class AccueilController extends AbstractController
             $userId = null;
         }
 
-
+        
         $allPhotos = json_decode($this->apiLinker->readData("/photos"));
         $allComments = json_decode($this->apiLinker->readData("/commentaires"));
 

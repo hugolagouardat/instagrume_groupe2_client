@@ -18,12 +18,7 @@
 	<div class="container-form-connexion">
 		<div class="container-md">
 			<div class="row">
-				{% if error is defined %}
-					<div class="alert alert-danger">
-						{{ error }}
-					</div>
-				{% endif %}
-
+	
 				{% if success is defined %}
 					<div class="alert alert-success">
 						{{ success }}
@@ -47,6 +42,11 @@
 					<div class='form-group mt-3'>
 						<input type='file' class='form-control' id='avatar' name='avatar' accept="image/*">
 					</div>
+					{% if error is defined %}
+						<a style="color:red; display:flex; justify-content:center;">
+							{{ error }}
+						</a>
+					{% endif %}
 					<button type='submit' class='btn btn-success mt-4 w-100'>Créer</button>
 				</form>
 

@@ -126,8 +126,11 @@ $(button).closest('.comments-section').find('.comment-form').toggle();
         		const hasUserLiked = getCookie(cookieName); // Vérifie le cookie
 
 				if (isPhotoLike && hasUserLiked) {
+					// Récupérez l'ID du like à partir du bouton parent
+    				const likeId = this.getAttribute('data-like-id');
+
 					// Si l'utilisateur a déjà liké, envoie une requête pour supprimer le like
-					fetch(`http://127.0.0.1:3000/api/photolikes/${photoId}`, {
+					fetch(`http://127.0.0.1:3000/api/photolikes/${likeId}`, {
 						method: 'DELETE',
 					})
 					.then(response => {
@@ -146,6 +149,9 @@ $(button).closest('.comments-section').find('.comment-form').toggle();
 
 						this.classList.remove('liked'); // Retirer la classe 'liked' pour le style
 						this.disabled = false; // Activer à nouveau le bouton
+
+						// Utilisation de l'identifiant du like supprimé dans votre interface
+    					const deletedLikeId = data.likeId; // Récupérer l'ID du like supprimé
 					})
 					.catch(error => {
 						console.error('Erreur:', error.message);

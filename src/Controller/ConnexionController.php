@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Service\ToolFunctions;
 use App\Service\JsonConverter;
 use App\Service\ApiLinker;
 
@@ -14,15 +15,40 @@ class ConnexionController extends AbstractController {
 
     private $jsonConverter;
     private $apiLinker;
+    private $toolFunctions;
 
-    public function __construct(ApiLinker $apiLinker, JsonConverter $jsonConverter) {
+    public function __construct(ApiLinker $apiLinker, JsonConverter $jsonConverter, ToolFunctions $toolFunctions) {
         $this->apiLinker = $apiLinker;
         $this->jsonConverter = $jsonConverter;
+        $this->toolFunctions = $toolFunctions;
     }
 
     #[Route('/login', methods: ['GET'])]
-    public function displayConnexion(){
-        return $this->render("login.html.twig");
+    public function displayConnexion(Request $request){
+
+        $session = $request->getSession();
+        $token = $session->get('token-session');
+        $payloadData = $this->toolFunctions->getPayload($token);
+        if ($this->toolFunctions->isTokenExpirated($payloadData)) {
+            return $this->redirect('/logout');
+        }
+        if ($payloadData != null) {
+            $userName = $payloadData->username; // Nom de l'utilisateur
+            $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
+            $userId = $this->toolFunctions->getIdByUsername($userName);
+
+        } else {
+            $userRole = null;
+            $userName = null;
+            $userId = null;
+        }
+
+        return $this->render('login.html.twig', [
+            'controller_name' => 'ConnexionController',
+            'actualUserName' =>  $userName,
+            'actualUserRole' => $userRole,
+            'actualUserId' => $userId
+        ]);
     }
 
     #[Route('/login', methods: ['POST'])]
@@ -43,12 +69,16 @@ class ConnexionController extends AbstractController {
     
                 // Redirigez vers la page d'accueil ou une autre page après la connexion réussie
                 return $this->redirect('/');
-            } else {
-                // Gérez le cas où le token n'est pas récupéré correctement
-                return $this->redirect('/login');
+                
+            } else if ($response == 'Les champs ne doivent pas être vide') {
+                return $this->render("login.html.twig", ['error' => 'Les champs ne doivent pas être vide.']);
+            } else if ($response == 'Username invalide') {
+                return $this->render("login.html.twig", ['error' => 'Identifiant invalide.']);
+            } else if ($response == 'Password invalide') {
+                return $this->render("login.html.twig", ['error' => 'Mot de passe invalide.']);
             }
         }
-    
+        
         return $this->redirect('/login');
     }
     
@@ -64,8 +94,33 @@ class ConnexionController extends AbstractController {
 
 
     #[Route('/register', methods: ['GET'])]
-    public function displayRegister(){
-        return $this->render("register.html.twig");
+    public function displayRegister(Request $request){
+
+        $session = $request->getSession();
+        $token = $session->get('token-session');
+        $payloadData = $this->toolFunctions->getPayload($token);
+        if ($this->toolFunctions->isTokenExpirated($payloadData)) {
+            return $this->redirect('/logout');
+        }
+        if ($payloadData != null) {
+            $userName = $payloadData->username; // Nom de l'utilisateur
+            $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
+            $userId = $this->toolFunctions->getIdByUsername($userName);
+
+        } else {
+            $userRole = null;
+            $userName = null;
+            $userId = null;
+        }
+
+        return $this->render('register.html.twig', [
+            'controller_name' => 'ConnexionController',
+            'actualUserName' =>  $userName,
+            'actualUserRole' => $userRole,
+            'actualUserId' => $userId
+        ]);
+
+        
     }
     #[Route('/register', methods: ['POST'])]
 public function register(Request $request) {
@@ -82,8 +137,12 @@ public function register(Request $request) {
 
     // Gestion de l'image
     $image = $request->files->get('avatar');
-    $imageData = file_get_contents($image->getPathname());
-    $base64 = base64_encode($imageData);
+    if ($image != null) {
+        $imageData = file_get_contents($image->getPathname());
+        $base64 = base64_encode($imageData);
+    } else {
+        $base64 = "default.png";
+    }
 
     // Préparation des données à envoyer
     $data = $this->jsonConverter->encodeToJson([
@@ -94,7 +153,7 @@ public function register(Request $request) {
     ]);
 
     // Envoi des données au serveur
-    $response = $this->apiLinker->postData('/users', $data, null);
+    $response = $this->apiLinker->postData('/createUser', $data, null);
     $responseObject = json_decode($response);
 
     // Gestion de la réponse et redirection
@@ -105,6 +164,7 @@ public function register(Request $request) {
         // Gérer l'échec de l'inscription
         return $this->render("register.html.twig", ['error' => 'Erreur lors de l\'inscription.']);
     }
+    
 }
 
     
