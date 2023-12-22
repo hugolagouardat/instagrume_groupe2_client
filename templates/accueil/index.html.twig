@@ -88,16 +88,34 @@
 												<button class="like-button" data-comment-id="{{ comment.id }}" data-action="dislike-comment">
 													<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 												</button>
-												{{ comment.dislikesCount }}
-												<button class="rep-comment-button">Répondre</button>
-
-
+												{{ comment.dislikesCount }}										
+												
+												<button class="rep-comment-button" onclick="toggleRepCommentForm({{ comment.id }})">Répondre</button>
 											</div>
+												<!-- Formulaire pour ajouter une réponse de commentaire -->												
+												<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">	
+													<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote'}) }}" method="POST">
+
+														<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+														<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+														<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+														<div class="boutonAjouter">
+															<input type="submit" value="Ajouter">
+														</div>
+													</form>
+												</div>
+
+												<script>
+													function toggleRepCommentForm(commentId) {
+														const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
+														repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+													}
+												</script>
 
 											<!-- Vérification des commentaires enfants -->
 											{% set childrenComments = allComments|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
-									
-											{% if childrenComments is not empty %}
+
+											{% if childrenComments is not empty %}												
 												<div class="children-comments">
 													{% for childComment in childrenComments %}
 														<div class="comment-child">
@@ -105,9 +123,10 @@
 																<div class="comment-user-date">
 																	<strong class="comment-user">@{{ childComment.user.username }}</strong>
 																	<span class="comment-child-date">{{ childComment.dateCommentaire }}</span>
-																</div>
+																</div>																
+																
 																<p class="comment-text">{{ childComment.description }}</p>
-
+																
 																<!-- Likes pour le commentaire -->
 																<div class="comment-likes">
 																	<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
@@ -118,20 +137,30 @@
 																		<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 																	</button>
 																	{{ comment.dislikesCount }}
-																	<a href="#" class="rep-comment">Répondre</a>
-																</div>															
+																	<button class="rep-rep-comment-button" onclick="toggleRepRepCommentForm({{ childComment.id }})">Répondre</button>
+
+																</div>
+
+																<!-- Formulaire pour ajouter une réponse de commentaire -->																	
+																<div class="rep-rep-comment-form" id="rep-rep-comment-form-{{ childComment.id }}" style="display: none;">														
+																	<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': childComment.user.username}) }}" method="POST">
+																		<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+																		<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+																		<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+																		<div class="boutonAjouter">
+																			<input type="submit" value="Répondre">
+																		</div>
+																	</form>
+																</div>
+																<script>
+																	function toggleRepRepCommentForm(childCommentId) {
+																		const repCommentForm = document.getElementById(`rep-rep-comment-form-${childCommentId}`);
+																		repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+																	}
+																</script>
+																											
 															</div>
-															<div class="comment-form" style="display: none;">
-																<!-- Formulaire pour ajouter un commentaire -->
-																<form action="{{ path('add_comment') }}" method="POST">
-																	<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
-																	<input type="hidden" name="comment_username" value="{{ actualUserName }}">
-																	<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
-																	<div class="boutonAjouter">
-																		<input type="submit" value="Ajouter">
-																	</div>
-																</form>
-															</div>
+															
 														</div>
 													{% endfor %}
 												</div>
