@@ -30,8 +30,9 @@
 
 								<h5 class="card-title">{{ photo.description }}</h5>
 								{% if photo.user %}
-									<p class="card-text">
-										Posté par @{{ photo.user.username }}</p>
+									<p class="card-posted">
+										Posté par <strong>@{{ photo.user.username }}</strong>
+									</p>
 								{% else %}
 									<p class="card-text">Unknown User</p>
 									<!-- Gestion si l'utilisateur est introuvable -->
@@ -42,8 +43,18 @@
 							<div class="comments-section">
 								<h6>Commentaires :
 									<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
-
 								</h6>
+								
+								<script>
+									function toggleCommentForm(button) {
+										const commentForm = $(button).closest('.comments-section').find('.comment-form');
+										commentForm.toggle();
+										const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
+										button.textContent = buttonText;
+									}
+
+								</script>
+
 								<div
 									class="comment-form" style="display: none;">
 									<!-- Formulaire pour ajouter un commentaire -->
@@ -56,15 +67,11 @@
 										</div>
 									</form>
 								</div>
-								<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-								<script>
-									function toggleCommentForm(button) {
-$(button).closest('.comments-section').find('.comment-form').toggle();
-}
-								</script>
-								{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id) %}
+																
+								{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id and comment.commentaireParent is empty) %}
 								{% if commentsForPhoto|length > 0 %}
 									{% for comment in commentsForPhoto %}
+	
 										<div class="comment">
 											<div class="comment-user-date">
 												<strong class="comment-user">@{{ comment.user.username }}</strong>
@@ -82,18 +89,48 @@ $(button).closest('.comments-section').find('.comment-form').toggle();
 													<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 												</button>
 												{{ comment.dislikesCount }}
+												<button class="rep-comment-button">Répondre</button>
+
+
 											</div>
 
 											<!-- Vérification des commentaires enfants -->
-											{% set childrenComments = commentsForPhoto|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
+											{% set childrenComments = allComments|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
+									
 											{% if childrenComments is not empty %}
 												<div class="children-comments">
 													{% for childComment in childrenComments %}
 														<div class="comment-child">
 															<div class="intern-comment">
-																<strong class="comment-user">@{{ childComment.user.username }}</strong>
+																<div class="comment-user-date">
+																	<strong class="comment-user">@{{ childComment.user.username }}</strong>
+																	<span class="comment-child-date">{{ childComment.dateCommentaire }}</span>
+																</div>
 																<p class="comment-text">{{ childComment.description }}</p>
-																<span class="comment-date">{{ childComment.dateCommentaire }}</span>
+
+																<!-- Likes pour le commentaire -->
+																<div class="comment-likes">
+																	<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
+																		<img src="{{ asset('images/like.png') }}" class="image-like-commentaire">
+																	</button>
+																	{{ comment.likesCount }}
+																	<button class="like-button" data-comment-id="{{ comment.id }}" data-action="dislike-comment">
+																		<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
+																	</button>
+																	{{ comment.dislikesCount }}
+																	<a href="#" class="rep-comment">Répondre</a>
+																</div>															
+															</div>
+															<div class="comment-form" style="display: none;">
+																<!-- Formulaire pour ajouter un commentaire -->
+																<form action="{{ path('add_comment') }}" method="POST">
+																	<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+																	<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+																	<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+																	<div class="boutonAjouter">
+																		<input type="submit" value="Ajouter">
+																	</div>
+																</form>
 															</div>
 														</div>
 													{% endfor %}

@@ -121,9 +121,14 @@
     margin-right: 10px; /* Espace entre le nom d'utilisateur et la date */
 }
 
-.comment-date {
+.comment-date, 
+.comment-child-date {
     font-size: 12px;
     color: #888;
+}
+
+.comment-child-date {
+    margin-right: 8px;
 }
 
 .aucun-com {
@@ -147,6 +152,10 @@
     cursor: pointer;
     transition: all 0.3s ease;
     outline: none;
+}
+
+.comment-button:focus {
+    outline: none; /* Supprime l'effet de focus par défaut sur le clic */
 }
 
 .comment-button:hover {
@@ -215,4 +224,13 @@
     display: flex;
     flex-direction: column;
 
+}
+
+.rep-comment-button {
+    font-size: 15px;
+    margin-left: 15px;
+    border: none; 
+    color: #007afc;
+    background-color: transparent; 
+    cursor: pointer; 
 }
