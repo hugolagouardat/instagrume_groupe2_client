@@ -60,3 +60,8 @@ textarea {
     display: inline-block; 
     height: 44px;
 }
+
+.button-save:focus,
+.button-cancel:focus {
+    outline: none; /* Supprime l'effet de focus par défaut sur le clic */
+}

@@ -118,7 +118,7 @@
 .comment-user {
     font-size: 12px;
     font-weight: bold;
-    margin-right: 10px; /* Espace entre le nom d'utilisateur et la date */
+    margin-right: auto; /* Espace entre le nom d'utilisateur et la date */
 }
 
 .comment-date, 
@@ -158,7 +158,9 @@
 .rep-comment-button:focus,
 .rep-rep-comment-button:focus,
 .suppr-button:focus,
-.modif-button:focus {
+.modif-button:focus,
+.suppr-comment-button:focus,
+.modif-comment-button:focus {
     outline: none; /* Supprime l'effet de focus par défaut sur le clic */
 }
 
@@ -272,13 +274,16 @@
 }
 
 .suppr-button,
-.modif-button {
+.modif-button,
+.suppr-comment-button,
+.modif-comment-button {
     background-color: transparent; 
     border: none;
 
 }
 
-.des-supp-modif {
+.des-supp-modif,
+.comment-user-date {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -286,5 +291,16 @@
 
 .action-button {
     display: flex;
-    gap: 10px; /* Ajustez l'espace entre les boutons selon vos besoins */
+    gap: 2px; 
+    margin-right: 10px;
+}
+
+.image-comment-suppr,
+.image-comment-modif {
+    width: 15px;
+}
+
+.image-comment-suppr,
+.image-suppr {
+    margin-bottom: 2px;
 }

@@ -74,29 +74,25 @@
 								{% endif %}
 
 								<script>
-								function toggleSupprPhoto(photoId) {									
-									if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
-										fetch(`http://127.0.0.1:3000/api/photos/${photoId}`, {
-											method: 'DELETE',
-											headers: {
-												'Content-Type': 'application/json'												
-											},											
-										})
-										.then(response => {
-											// Gérer la réponse de la requête
-											if (response.ok) {																								
-												location.reload(); 
-											} else {
-												// Gérer les erreurs en cas de problème lors de la suppression
-												console.error('La suppression de la photo a échoué.');
-											}
-										})
-										.catch(error => {
-											// Gérer les erreurs liées à la requête
+									function toggleSupprPhoto(photoId) {
+										if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
+											fetch(`http://127.0.0.1:3000/api/photos/${photoId}`, {
+												method: 'DELETE',
+												headers: {
+												'Content-Type': 'application/json'
+												}
+											})
+											.then(response => { // Gérer la réponse de la requête
+												if (response.ok) {
+													location.reload();
+												} else { // Gérer les erreurs en cas de problème lors de la suppression
+													console.error('La suppression de la photo a échoué.');
+												}
+											}).catch(error => { // Gérer les erreurs liées à la requête
 											console.error('Erreur lors de la suppression de la photo :', error);
-										});
+											});
+										}
 									}
-								}								
 								</script>
 
 							</div>
@@ -135,9 +131,43 @@ button.textContent = buttonText;
 										<div class="comment">
 											<div class="comment-user-date">
 												<strong class="comment-user">@{{ comment.user.username }}</strong>
+												{% if actualUserId == comment.user.id %}
+													<div class="comment-supp-modif">
+														<div class="action-button">
+															<button class="suppr-comment-button" onclick="toggleSupprComment({{ comment.id }})">
+																<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
+															</button>
+															<a class="modif-comment-button" href="#">
+																<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
+															</a>
+														</div>
+													</div>
+												{% endif %}
 												<span class="comment-date">{{ comment.dateCommentaire }}</span>
 											</div>
 											<p class="comment-text">{{ comment.description }}</p>
+
+											<script>
+												function toggleSupprComment(commentId) {
+													if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
+														fetch(`http://127.0.0.1:3000/api/commentaires/${commentId}`, {
+															method: 'DELETE',
+															headers: {
+															'Content-Type': 'application/json'
+															}
+														})
+														.then(response => { // Gérer la réponse de la requête
+															if (response.ok) {
+																location.reload();
+															} else { // Gérer les erreurs en cas de problème lors de la suppression
+																console.error('La suppression de la photo a échoué.');
+															}
+														}).catch(error => { // Gérer les erreurs liées à la requête
+														console.error('Erreur lors de la suppression de la photo :', error);
+														});
+													}
+												}
+											</script>
 
 											<!-- Likes pour le commentaire -->
 											<div class="comment-likes">
@@ -182,8 +212,42 @@ repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block'
 															<div class="intern-comment">
 																<div class="comment-user-date">
 																	<strong class="comment-user">@{{ childComment.user.username }}</strong>
+																	{% if actualUserId == childComment.user.id %}
+																		<div class="comment-supp-modif">
+																			<div class="action-button">
+																				<button class="suppr-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
+																					<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
+																				</button>
+																				<a class="modif-comment-button" href="#">
+																					<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
+																				</a>
+																			</div>
+																		</div>
+																	{% endif %}
 																	<span class="comment-child-date">{{ childComment.dateCommentaire }}</span>
 																</div>
+
+																<script>
+																	function toggleSupprRepComment(childCommentId) {
+																		if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
+																			fetch(`http://127.0.0.1:3000/api/commentaires/${childCommentId}`, {
+																				method: 'DELETE',
+																				headers: {
+																				'Content-Type': 'application/json'
+																				}
+																			})
+																			.then(response => { // Gérer la réponse de la requête
+																				if (response.ok) {
+																					location.reload();
+																				} else { // Gérer les erreurs en cas de problème lors de la suppression
+																					console.error('La suppression de la photo a échoué.');
+																				}
+																			}).catch(error => { // Gérer les erreurs liées à la requête
+																			console.error('Erreur lors de la suppression de la photo :', error);
+																			});
+																		}
+																	}
+																</script>
 
 																<p class="comment-text">{{ childComment.description }}</p>
 
