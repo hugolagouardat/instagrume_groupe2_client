@@ -80,4 +80,21 @@ class ToolFunctions
         // Si la clé "id" n'existe pas, retournez null ou une valeur par défaut selon vos besoins
         return null;
     }
+
+    public function getPhotoById($photoId) {
+        // Assurez-vous que le service renvoie une chaîne JSON
+        $jsonResponse = $this->apiLinker->getData("/photos/" . $photoId, null);
+    
+        // Décoder la chaîne JSON en tableau PHP
+        $responseData = json_decode($jsonResponse, true);
+    
+        // Vérifiez si les données de la photo existent dans le tableau
+        if (!empty($responseData)) {
+            return $responseData;
+        }
+    
+        // Si les données de la photo n'existent pas, retournez null ou une valeur par défaut selon vos besoins
+        return null;
+    }
+    
 }

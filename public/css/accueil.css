@@ -156,7 +156,9 @@
 
 .comment-button:focus,
 .rep-comment-button:focus,
-.rep-rep-comment-button:focus {
+.rep-rep-comment-button:focus,
+.suppr-button:focus,
+.modif-button:focus {
     outline: none; /* Supprime l'effet de focus par défaut sur le clic */
 }
 
@@ -260,4 +262,29 @@
     color: #007afc;
     background-color: transparent; 
     cursor: pointer; 
+}
+
+/* Bouton de modification et suppression */
+
+.image-suppr,
+.image-modif {
+    width: 20px;
+}
+
+.suppr-button,
+.modif-button {
+    background-color: transparent; 
+    border: none;
+
+}
+
+.des-supp-modif {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-button {
+    display: flex;
+    gap: 10px; /* Ajustez l'espace entre les boutons selon vos besoins */
 }

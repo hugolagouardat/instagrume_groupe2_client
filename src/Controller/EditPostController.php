@@ -8,10 +8,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 use App\Service\JsonConverter;
-use App\Service\ApiLinker;
 use App\Service\ToolFunctions;
+use App\Service\ApiLinker;
 
-class AccueilController extends AbstractController
+class EditPostController extends AbstractController
 {
     private $jsonConverter;
     private $apiLinker;
@@ -24,8 +24,8 @@ class AccueilController extends AbstractController
         $this->toolFunctions = $toolFunctions;
     }
 
-    #[Route('/', name: 'app_accueil')]
-    public function displayAccueil(Request $request): Response
+    #[Route('/edit_post/{photoId}', name: 'edit_post')]
+    public function displayEditPost(Request $request, $photoId): Response
     {
         $session = $request->getSession();
         $token = $session->get('token-session');
@@ -47,55 +47,25 @@ class AccueilController extends AbstractController
         $allPhotos = json_decode($this->apiLinker->readData("/photos"));
         $allComments = json_decode($this->apiLinker->readData("/commentaires"));
 
+        $photo = $this->toolFunctions->getPhotoById($photoId);
 
-        return $this->render('accueil/index.html.twig', [
-            'controller_name' => 'AccueilController',
+
+        return $this->render('edit_post/edit_post.html.twig', [
+            'controller_name' => 'EditPostController',
             'allPhotos' => $allPhotos,
             'allComments' => $allComments,
             'actualUserName' =>  $userName,
             'actualUserRole' => $userRole,
-            'actualUserId' => $userId
+            'actualUserId' => $userId,
+            'idPhoto' => $photoId,
+            'photo' => $photo
         ]);
     }
 
-    #[Route('/add_comment', name: 'add_comment')]
-    public function addCommentaire(Request $request): Response
+    #[Route('/update_post/{photoId}', name: 'update_post')]
+    public function updatePost(Request $request, $photoId): Response
     {
-
-        $textToAdd = $request->request->get('commentaire');
-        $session = $request->getSession();
-        $token = $session->get('token-session');
-        $payloadData = $this->toolFunctions->getPayload($token);
-        if ($this->toolFunctions->isTokenExpirated($payloadData)) {
-            return $this->redirect('/logout');
-        }
-
-
-        if ($payloadData != null) {
-
-            $userId = $this->toolFunctions->getIdByUsername($request->request->get('comment_username'));
-            $senderPostId = intval($request->request->get('comment_photo_id'));
-            $data = [
-                "user_id" => $userId,
-                "description" => $textToAdd
-            ];
-
-            // Formez le JSON à envoyer
-            $jsonData = json_encode($data);
-            $this->apiLinker->postData('/photos/' . $senderPostId . '/commentaires', $jsonData, $token);
-            return $this->redirect('/');
-        }
-
-        // Gérez ici le cas où le formulaire n'est pas soumis ou s'il y a des erreurs
-
-        return $this->redirect('/login');
-    }
-
-    #[Route('/rep_comment/{idParentComment}/{userToAnnote}', name: 'rep_comment')]
-    public function addReponse(Request $request, $idParentComment, $userToAnnote): Response
-    {
-
-        $textToAdd = $request->request->get('commentaire');
+        $newDescription = $request->request->get('description');
         $session = $request->getSession();
         $token = $session->get('token-session');
         $payloadData = $this->toolFunctions->getPayload($token);
@@ -115,24 +85,35 @@ class AccueilController extends AbstractController
         }
 
         if ($payloadData != null) {
+            // Gestion de l'image
+            $image = $request->files->get('photo');
+            if (isset($image) && isset($newDescription)) {
+                $imageData = file_get_contents($image->getPathname());
+                $imageSend = base64_encode($imageData);
 
-            $userId = $this->toolFunctions->getIdByUsername($request->request->get('comment_username'));
-            $senderPostId = intval($request->request->get('comment_photo_id'));
-            if ($userToAnnote != 'noUserToAnnote') {
-                $descript = ('@'.$userToAnnote.' '.$textToAdd);
-            }
-            else {
-                $descript = $textToAdd;
-            }
-            $data = [
-                "user_id" => $userId,
-                "description" => $descript,
-                "parent_comment_id" => $idParentComment
-            ];
+                $data = [
+                    "image" => $imageSend,
+                    "description" => $newDescription
+                ];
+            } else if (isset($image) && !isset($newDescription)) {
+                $imageData = file_get_contents($image->getPathname());
+                $imageSend = base64_encode($imageData);
 
-            // Formez le JSON à envoyer
+                $data = [
+                    "image" => $imageSend
+                ];
+            } else if (!isset($image) && isset($newDescription)) {
+                $data = [
+                    "description" => $newDescription
+                ];
+            } else {
+                $data = [];
+            }
+
+
+            // Formatez les données en JSON
             $jsonData = json_encode($data);
-            $this->apiLinker->postData('/photos/' . $senderPostId . '/commentaires', $jsonData, $token);
+            $this->apiLinker->putData('/photos/' . $photoId, $jsonData, $token);
 
             return $this->redirect('/');
         }

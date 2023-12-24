@@ -27,16 +27,77 @@
 									<span class="date">{{ photo.datePoste }}</span>
 								</p>
 
-
-								<h5 class="card-title">{{ photo.description }}</h5>
-								{% if photo.user %}
-									<p class="card-posted">
-										Posté par <strong>@{{ photo.user.username }}</strong>
-									</p>
+								{% if actualUserId == photo.user.id %}
+									{% if photo.description != null %}
+										<div class="des-supp-modif">
+											<h5 class="card-title">{{ photo.description }}</h5>
+											<div class="action-button">
+												<button class="suppr-button" onclick="toggleSupprPhoto({{ photo.id }})">
+													<img src="{{ asset('images/poubelle.png') }}" class="image-suppr">
+												</button>
+												<a class="modif-button" href="{{ path('edit_post', {'photoId': photo.id}) }}">
+													<img src="{{ asset('images/modifier.png') }}" class="image-modif">
+												</a>
+											</div>
+										</div>
+										<p class="card-posted">
+											Posté par
+											<strong>@{{ photo.user.username }}</strong>
+										</p>
+									{% else %}
+										<div class="des-supp-modif">
+											<p class="card-posted">
+												Posté par
+												<strong>@{{ photo.user.username }}</strong>
+											</p>
+											<div class="action-button">
+												<button class="suppr-button" onclick="toggleSupprPhoto({{ photo.id }})">
+													<img src="{{ asset('images/poubelle.png') }}" class="image-suppr">
+												</button>
+												<a class="modif-button" href="{{ path('edit_post', {'photoId': photo.id}) }}">
+													<img src="{{ asset('images/modifier.png') }}" class="image-modif">
+												</a>
+											</div>
+										</div>
+									{% endif %}
 								{% else %}
-									<p class="card-text">Unknown User</p>
-									<!-- Gestion si l'utilisateur est introuvable -->
+									<h5 class="card-title">{{ photo.description }}</h5>
+									{% if photo.user %}
+										<p class="card-posted">
+											Posté par
+											<strong>@{{ photo.user.username }}</strong>
+										</p>
+									{% else %}
+										<p class="card-text">Unknown User</p>
+										<!-- Gestion si l'utilisateur est introuvable -->
+									{% endif %}
 								{% endif %}
+
+								<script>
+								function toggleSupprPhoto(photoId) {									
+									if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
+										fetch(`http://127.0.0.1:3000/api/photos/${photoId}`, {
+											method: 'DELETE',
+											headers: {
+												'Content-Type': 'application/json'												
+											},											
+										})
+										.then(response => {
+											// Gérer la réponse de la requête
+											if (response.ok) {																								
+												location.reload(); 
+											} else {
+												// Gérer les erreurs en cas de problème lors de la suppression
+												console.error('La suppression de la photo a échoué.');
+											}
+										})
+										.catch(error => {
+											// Gérer les erreurs liées à la requête
+											console.error('Erreur lors de la suppression de la photo :', error);
+										});
+									}
+								}								
+								</script>
 
 							</div>
 
@@ -44,15 +105,14 @@
 								<h6>Commentaires :
 									<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
 								</h6>
-								
+
 								<script>
 									function toggleCommentForm(button) {
-										const commentForm = $(button).closest('.comments-section').find('.comment-form');
-										commentForm.toggle();
-										const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
-										button.textContent = buttonText;
-									}
-
+const commentForm = $(button).closest('.comments-section').find('.comment-form');
+commentForm.toggle();
+const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
+button.textContent = buttonText;
+}
 								</script>
 
 								<div
@@ -67,11 +127,11 @@
 										</div>
 									</form>
 								</div>
-																
+
 								{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id and comment.commentaireParent is empty) %}
 								{% if commentsForPhoto|length > 0 %}
 									{% for comment in commentsForPhoto %}
-	
+
 										<div class="comment">
 											<div class="comment-user-date">
 												<strong class="comment-user">@{{ comment.user.username }}</strong>
@@ -88,34 +148,34 @@
 												<button class="like-button" data-comment-id="{{ comment.id }}" data-action="dislike-comment">
 													<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 												</button>
-												{{ comment.dislikesCount }}										
-												
+												{{ comment.dislikesCount }}
+
 												<button class="rep-comment-button" onclick="toggleRepCommentForm({{ comment.id }})">Répondre</button>
 											</div>
-												<!-- Formulaire pour ajouter une réponse de commentaire -->												
-												<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">	
-													<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote'}) }}" method="POST">
+											<!-- Formulaire pour ajouter une réponse de commentaire -->
+											<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">
+												<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote'}) }}" method="POST">
 
-														<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
-														<input type="hidden" name="comment_username" value="{{ actualUserName }}">
-														<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
-														<div class="boutonAjouter">
-															<input type="submit" value="Ajouter">
-														</div>
-													</form>
-												</div>
+													<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+													<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+													<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+													<div class="boutonAjouter">
+														<input type="submit" value="Ajouter">
+													</div>
+												</form>
+											</div>
 
-												<script>
-													function toggleRepCommentForm(commentId) {
-														const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
-														repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
-													}
-												</script>
+											<script>
+												function toggleRepCommentForm(commentId) {
+const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
+repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+}
+											</script>
 
 											<!-- Vérification des commentaires enfants -->
 											{% set childrenComments = allComments|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
 
-											{% if childrenComments is not empty %}												
+											{% if childrenComments is not empty %}
 												<div class="children-comments">
 													{% for childComment in childrenComments %}
 														<div class="comment-child">
@@ -123,10 +183,10 @@
 																<div class="comment-user-date">
 																	<strong class="comment-user">@{{ childComment.user.username }}</strong>
 																	<span class="comment-child-date">{{ childComment.dateCommentaire }}</span>
-																</div>																
-																
+																</div>
+
 																<p class="comment-text">{{ childComment.description }}</p>
-																
+
 																<!-- Likes pour le commentaire -->
 																<div class="comment-likes">
 																	<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
@@ -141,8 +201,8 @@
 
 																</div>
 
-																<!-- Formulaire pour ajouter une réponse de commentaire -->																	
-																<div class="rep-rep-comment-form" id="rep-rep-comment-form-{{ childComment.id }}" style="display: none;">														
+																<!-- Formulaire pour ajouter une réponse de commentaire -->
+																<div class="rep-rep-comment-form" id="rep-rep-comment-form-{{ childComment.id }}" style="display: none;">
 																	<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': childComment.user.username}) }}" method="POST">
 																		<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
 																		<input type="hidden" name="comment_username" value="{{ actualUserName }}">
@@ -154,13 +214,13 @@
 																</div>
 																<script>
 																	function toggleRepRepCommentForm(childCommentId) {
-																		const repCommentForm = document.getElementById(`rep-rep-comment-form-${childCommentId}`);
-																		repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
-																	}
+const repCommentForm = document.getElementById(`rep-rep-comment-form-${childCommentId}`);
+repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+}
 																</script>
-																											
+
 															</div>
-															
+
 														</div>
 													{% endfor %}
 												</div>
@@ -176,115 +236,106 @@
 					</div>
 				</div>
 
-				
+
 			{% endfor %}
 		</div>
 	</div>
 
 	<script>
 		document.querySelectorAll('.like-button').forEach(button => {
-			button.addEventListener('click', function() {
-				const isPhotoLike = this.getAttribute('data-action') === 'like';
-				const photoId = this.getAttribute('data-photo-id');
-				const userId = '{{ actualUserId }}'; // Remplissez avec l'ID de l'utilisateur actuel
+button.addEventListener('click', function () {
+const isPhotoLike = this.getAttribute('data-action') === 'like';
+const photoId = this.getAttribute('data-photo-id');
+const userId = '{{ actualUserId }}'; // Remplissez avec l'ID de l'utilisateur actuel
 
-				const cookieName = `liked-${userId}-${photoId}`;
-        		const hasUserLiked = getCookie(cookieName); // Vérifie le cookie
+const cookieName = `liked-${userId}-${photoId}`;
+const hasUserLiked = getCookie(cookieName); // Vérifie le cookie
 
-				if (isPhotoLike && hasUserLiked) {
-					// Récupérez l'ID du like à partir du bouton parent
-    				const likeId = this.getAttribute('data-like-id');
+if (isPhotoLike && hasUserLiked) { // Récupérez l'ID du like à partir du bouton parent
+const likeId = this.getAttribute('data-like-id');
 
-					// Si l'utilisateur a déjà liké, envoie une requête pour supprimer le like
-					fetch(`http://127.0.0.1:3000/api/photolikes/${likeId}`, {
-						method: 'DELETE',
-					})
-					.then(response => {
-						if (!response.ok) {
-							throw new Error('Erreur lors de la suppression du like');
-						}
-						return response.json();
-					})
-					.then(data => {
-						console.log('Like supprimé avec succès:', data);
+// Si l'utilisateur a déjà liké, envoie une requête pour supprimer le like
+fetch (`http://127.0.0.1:3000/api/photolikes/${likeId}`, {method: 'DELETE'}).then(response => {
+if (!response.ok) {
+throw new Error('Erreur lors de la suppression du like');
+}
+return response.json();
+}).then(data => {
+console.log('Like supprimé avec succès:', data);
 
-						const likeCountElement = document.getElementById(`like-count-${photoId}`);
-						likeCountElement.textContent = data.updatedLikeCount; // Mettre à jour le nombre de likes
+const likeCountElement = document.getElementById (`like-count-${photoId}`);
+likeCountElement.textContent = data.updatedLikeCount; // Mettre à jour le nombre de likes
 
-						setCookieWithoutExpiration(cookieName, ''); // Supprimer le cookie
+setCookieWithoutExpiration(cookieName, ''); // Supprimer le cookie
 
-						this.classList.remove('liked'); // Retirer la classe 'liked' pour le style
-						this.disabled = false; // Activer à nouveau le bouton
+this.classList.remove('liked'); // Retirer la classe 'liked' pour le style
+this.disabled = false;
+// Activer à nouveau le bouton
 
-						// Utilisation de l'identifiant du like supprimé dans votre interface
-    					const deletedLikeId = data.likeId; // Récupérer l'ID du like supprimé
-					})
-					.catch(error => {
-						console.error('Erreur:', error.message);
-						// Gérer l'erreur si nécessaire
-					});
-				} else {
+// Utilisation de l'identifiant du like supprimé dans votre interface
+const deletedLikeId = data.likeId; // Récupérer l'ID du like supprimé
+}).catch(error => {
+console.error('Erreur:', error.message);
+// Gérer l'erreur si nécessaire
+});
+} else {
 
-					fetch('http://127.0.0.1:3000/api/photolikes', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({
-							photoId: photoId,
-							userId: userId,
-							likeType: true // True pour like, false pour dislike
-						}),
-					})
-					.then(response => {
-						if (!response.ok) {
-							throw new Error('Erreur lors de l\'ajout du like');
-						}
-						return response.json();
-					})
-					.then(data => {
-						// Gérer la réponse si nécessaire
-						console.log('Like ajouté avec succès:', data);
-						// Mettre à jour le nombre de likes dans l'interface
-						const likeCountElement = document.getElementById(`like-count-${photoId}`);
-    					likeCountElement.textContent = data.updatedLikeCount;
+fetch('http://127.0.0.1:3000/api/photolikes', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(
+{
+photoId: photoId, userId: userId, likeType: true // True pour like, false pour dislike
+}
+)
+}).then(response => {
+if (!response.ok) {
+throw new Error('Erreur lors de l\'ajout du like');
+}
+return response.json();
+}).then(data => { // Gérer la réponse si nécessaire
+console.log('Like ajouté avec succès:', data);
+// Mettre à jour le nombre de likes dans l'interface
+const likeCountElement = document.getElementById (`like-count-${photoId}`);
+likeCountElement.textContent = data.updatedLikeCount;
 
-						// Stocker le like dans un cookie
-                		setCookieWithoutExpiration(`liked-${userId}-${photoId}`, 'true');
+// Stocker le like dans un cookie
+setCookieWithoutExpiration(`liked-${userId}-${photoId}`, 'true');
 
-						// Désactiver le bouton de like après le premier clic
-                		this.classList.add('liked');
-                		this.disabled = true;
-					})
-					.catch(error => {
-						console.error('Erreur:', error.message);
-						// Gérer l'erreur si nécessaire
-					});
-				}
-			});
-		});
+// Désactiver le bouton de like après le premier clic
+this.classList.add('liked');
+this.disabled = true;
+}).catch(error => {
+console.error('Erreur:', error.message);
+// Gérer l'erreur si nécessaire
+});
+}
+});
+});
 
-	// Fonctions utilitaires pour les cookies
-	function setCookieWithoutExpiration(name, value) {
-    	document.cookie = `${name}=${value};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
-	}
+// Fonctions utilitaires pour les cookies
+function setCookieWithoutExpiration(name, value) {
+document.cookie = `${name}=${value};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
+}
 
-	function getCookie(name) {
-		const cookieName = `${name}=`;
-		const decodedCookie = decodeURIComponent(document.cookie);
-		const cookieArray = decodedCookie.split(';');
+function getCookie(name) {
+const cookieName = `${name}=`;
+const decodedCookie = decodeURIComponent(document.cookie);
+const cookieArray = decodedCookie.split(';');
 
-		for (let i = 0; i < cookieArray.length; i++) {
-			let cookie = cookieArray[i];
-			while (cookie.charAt(0) === ' ') {
-				cookie = cookie.substring(1);
-			}
-			if (cookie.indexOf(cookieName) === 0) {
-				return cookie.substring(cookieName.length, cookie.length);
-			}
-		}
-		return null;
-	}
+for (let i = 0; i < cookieArray.length; i++) {
+let cookie = cookieArray[i];
+while (cookie.charAt(0) === ' ') {
+cookie = cookie.substring(1);
+}
+if (cookie.indexOf(cookieName) === 0) {
+return cookie.substring(cookieName.length, cookie.length);
+}
+}
+return null;
+}
 	</script>
 
 
