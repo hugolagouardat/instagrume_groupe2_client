@@ -104,11 +104,11 @@
 
 								<script>
 									function toggleCommentForm(button) {
-const commentForm = $(button).closest('.comments-section').find('.comment-form');
-commentForm.toggle();
-const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
-button.textContent = buttonText;
-}
+										const commentForm = $(button).closest('.comments-section').find('.comment-form');
+										commentForm.toggle();
+										const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
+										button.textContent = buttonText;
+									}
 								</script>
 
 								<div
@@ -137,16 +137,16 @@ button.textContent = buttonText;
 															<button class="suppr-comment-button" onclick="toggleSupprComment({{ comment.id }})">
 																<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
 															</button>
-															<a class="modif-comment-button" href="#">
+															<button class="modif-comment-button" onclick="toggleModifComment({{ comment.id }})">
 																<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
-															</a>
+															</button>
 														</div>
 													</div>
 												{% endif %}
 												<span class="comment-date">{{ comment.dateCommentaire }}</span>
 											</div>
 											<p class="comment-text">{{ comment.description }}</p>
-
+											{# Supprimer un commentaire parent #}
 											<script>
 												function toggleSupprComment(commentId) {
 													if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
@@ -169,6 +169,26 @@ button.textContent = buttonText;
 												}
 											</script>
 
+											{# Formulaire pour modifier un commentaire parent #}
+											<div class="modif-comment-form" id="modif-comment-form-{{ comment.id }}" style="display: none;">
+												<form action="#" method="PUT">
+													<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+													<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+													<textarea name="commentaire" rows="4" cols="50">{{ comment.description }}</textarea>
+													<div class="boutonModifier">
+														<input type="submit" value="Modifier">
+													</div>
+												</form>
+											</div>
+
+											<script>
+												function toggleModifComment(commentId) {
+													const commentForm = document.getElementById(`modif-comment-form-${commentId}`);
+													repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+												}
+											</script>
+											
+
 											<!-- Likes pour le commentaire -->
 											<div class="comment-likes">
 												<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
@@ -182,10 +202,9 @@ button.textContent = buttonText;
 
 												<button class="rep-comment-button" onclick="toggleRepCommentForm({{ comment.id }})">Répondre</button>
 											</div>
-											<!-- Formulaire pour ajouter une réponse de commentaire -->
+											<!-- Formulaire pour ajouter une commentaire -->
 											<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">
 												<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote'}) }}" method="POST">
-
 													<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
 													<input type="hidden" name="comment_username" value="{{ actualUserName }}">
 													<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
@@ -197,9 +216,9 @@ button.textContent = buttonText;
 
 											<script>
 												function toggleRepCommentForm(commentId) {
-const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
-repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
-}
+													const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
+													repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+												}
 											</script>
 
 											<!-- Vérification des commentaires enfants -->
@@ -218,7 +237,7 @@ repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block'
 																				<button class="suppr-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
 																					<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
 																				</button>
-																				<a class="modif-comment-button" href="#">
+																				<a class="modif-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
 																					<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
 																				</a>
 																			</div>

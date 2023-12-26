@@ -71,11 +71,11 @@ class ConnexionController extends AbstractController {
                 return $this->redirect('/');
                 
             } else if ($response == 'Les champs ne doivent pas être vide') {
-                return $this->render("login.html.twig", ['error' => 'Les champs ne doivent pas être vide.']);
+                return $this->render("login.html.twig", ['error' => 'Les champs ne doivent pas être vide.', 'actualUserName' => null]);
             } else if ($response == 'Username invalide') {
-                return $this->render("login.html.twig", ['error' => 'Identifiant invalide.']);
+                return $this->render("login.html.twig", ['error' => 'Identifiant invalide.', 'actualUserName' => null]);
             } else if ($response == 'Password invalide') {
-                return $this->render("login.html.twig", ['error' => 'Mot de passe invalide.']);
+                return $this->render("login.html.twig", ['error' => 'Mot de passe invalide.', 'actualUserName' => null]);
             }
         }
         
