@@ -145,7 +145,10 @@
 												{% endif %}
 												<span class="comment-date">{{ comment.dateCommentaire }}</span>
 											</div>
-											<p class="comment-text">{{ comment.description }}</p>
+											<div id="comment-content-{{ comment.id }}">
+												<p class="comment-text">{{ comment.description }}</p>
+											</div>
+
 											{# Supprimer un commentaire parent #}
 											<script>
 												function toggleSupprComment(commentId) {
@@ -171,20 +174,26 @@
 
 											{# Formulaire pour modifier un commentaire parent #}
 											<div class="modif-comment-form" id="modif-comment-form-{{ comment.id }}" style="display: none;">
-												<form action="#" method="PUT">
-													<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
-													<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+												<form action="{{ path('update_comment', {'commentId': comment.id}) }}" method="POST">
 													<textarea name="commentaire" rows="4" cols="50">{{ comment.description }}</textarea>
 													<div class="boutonModifier">
 														<input type="submit" value="Modifier">
 													</div>
 												</form>
-											</div>
-
+											</div>										
+											
 											<script>
 												function toggleModifComment(commentId) {
+													const commentContent = document.getElementById(`comment-content-${commentId}`);
 													const commentForm = document.getElementById(`modif-comment-form-${commentId}`);
-													repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+
+													if (commentContent.style.display !== 'none') {
+														commentContent.style.display = 'none';
+														commentForm.style.display = 'block';
+													} else {
+														commentContent.style.display = 'block';
+														commentForm.style.display = 'none';
+													}
 												}
 											</script>
 											
@@ -237,13 +246,16 @@
 																				<button class="suppr-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
 																					<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
 																				</button>
-																				<a class="modif-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
+																				<button class="modif-rep-comment-button" onclick="toggleModifRepComment({{ childComment.id }})">
 																					<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
-																				</a>
+																				</button>
 																			</div>
 																		</div>
 																	{% endif %}
 																	<span class="comment-child-date">{{ childComment.dateCommentaire }}</span>
+																</div>
+																<div id="rep-comment-content-{{ childComment.id }}">
+																	<p class="comment-text">{{ childComment.description }}</p>
 																</div>
 
 																<script>
@@ -268,8 +280,31 @@
 																	}
 																</script>
 
-																<p class="comment-text">{{ childComment.description }}</p>
+																{# Formulaire pour modifier un commentaire parent #}
+																<div class="modif-comment-form" id="modif-rep-comment-form-{{ childComment.id }}" style="display: none;">
+																	<form action="{{ path('update_comment', {'commentId': childComment.id}) }}" method="POST">
+																		<textarea name="commentaire" rows="4" cols="50">{{ childComment.description }}</textarea>
+																		<div class="boutonModifier">
+																			<input type="submit" value="Modifier">
+																		</div>
+																	</form>
+																</div>										
+																
+																<script>
+																	function toggleModifRepComment(childCommentId) {
+																		const commentContent = document.getElementById(`rep-comment-content-${childCommentId}`);
+																		const commentForm = document.getElementById(`modif-rep-comment-form-${childCommentId}`);
 
+																		if (commentContent.style.display !== 'none') {
+																			commentContent.style.display = 'none';
+																			commentForm.style.display = 'block';
+																		} else {
+																			commentContent.style.display = 'block';
+																			commentForm.style.display = 'none';
+																		}
+																	}
+																</script>
+																
 																<!-- Likes pour le commentaire -->
 																<div class="comment-likes">
 																	<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">

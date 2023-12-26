@@ -160,7 +160,8 @@
 .suppr-button:focus,
 .modif-button:focus,
 .suppr-comment-button:focus,
-.modif-comment-button:focus {
+.modif-comment-button:focus,
+.modif-rep-comment-button:focus {
     outline: none; /* Supprime l'effet de focus par défaut sur le clic */
 }
 
@@ -181,7 +182,8 @@
 /* Style pour la zone de texte */
 .comment-form textarea, 
 .rep-comment-form textarea,
-.rep-rep-comment-form textarea {
+.rep-rep-comment-form textarea,
+.modif-comment-form textarea {
     width: 100%;
     height: 44px;
     padding: 10px;
@@ -192,10 +194,11 @@
     font-size: 14px;
 }
 
-/* Bouton 'Ajouter' du formulaire */
+/* Bouton des formulaire */
 .comment-form input[type="submit"],
 .rep-comment-form input[type="submit"],
-.rep-rep-comment-form input[type="submit"] {
+.rep-rep-comment-form input[type="submit"],
+.modif-comment-form input[type="submit"] {
     display: block;
     width: 50%;
     padding: 6px;
@@ -210,7 +213,8 @@
 
 .comment-form input[type="submit"]:hover, 
 .rep-comment-form input[type="submit"]:hover,
-.rep-rep-comment-form input[type="submit"]:hover {
+.rep-rep-comment-form input[type="submit"]:hover,
+.modif-comment-form input[type="submit"]:hover {
     background-color: #5b92eb; /* Couleur de fond modifiée au survol */
 }
 
@@ -221,18 +225,21 @@
 }
 
 .rep-comment-form textarea,
-.rep-rep-comment-form textarea {
+.rep-rep-comment-form textarea,
+.modif-comment-form textarea {
     height: 40px; /* ajustez la hauteur souhaitée */
     font-size: 13px; /* ajustez la taille de la police */
 }
 
 .rep-comment-form input[type="submit"],
-.rep-rep-comment-form input[type="submit"] {
+.rep-rep-comment-form input[type="submit"],
+.modif-comment-form input[type="submit"] {
     font-size: 12px; 
     margin-top: 1px;
 }
 
-.boutonAjouter {
+.boutonAjouter,
+.boutonModifier {
     display: flex;
     justify-content: center; /* Centre horizontalement */
     align-items: center;
@@ -276,7 +283,8 @@
 .suppr-button,
 .modif-button,
 .suppr-comment-button,
-.modif-comment-button {
+.modif-comment-button,
+.modif-rep-comment-button {
     background-color: transparent; 
     border: none;
 

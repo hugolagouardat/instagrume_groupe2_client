@@ -139,4 +139,46 @@ class AccueilController extends AbstractController
 
         return $this->redirect('/login');
     }
+
+    #[Route('/update_comment/{commentId}', name: 'update_comment')]
+    public function updateComment(Request $request, $commentId): Response
+    {
+        $newComment = $request->request->get('commentaire');
+        $session = $request->getSession();
+        $token = $session->get('token-session');
+        $payloadData = $this->toolFunctions->getPayload($token);
+        if ($this->toolFunctions->isTokenExpirated($payloadData)) {
+            return $this->redirect('/logout');
+        }
+
+        if ($payloadData != null) {
+            $userName = $payloadData->username; // Nom de l'utilisateur
+            $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
+            $userId = $this->toolFunctions->getIdByUsername($userName);
+        } else {
+            $userRole = null;
+            $userName = null;
+            $userId = null;
+            return $this->redirect('/login');
+        }
+
+        if ($payloadData != null) {
+            
+            if (isset($newComment)) {                
+                $data = [
+                    "description" => $newComment
+                ];
+            } else {
+                $data = [];
+            }
+
+            // Formatez les données en JSON
+            $jsonData = json_encode($data);
+            $this->apiLinker->putData('/commentaires/' . $commentId, $jsonData, $token);
+
+            return $this->redirect('/');
+        }
+
+        return $this->redirect('/login');
+    }
 }
