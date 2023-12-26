@@ -11,7 +11,7 @@ use App\Service\JsonConverter;
 use App\Service\ToolFunctions;
 use App\Service\ApiLinker;
 
-class EditPostController extends AbstractController
+class NewPostController extends AbstractController
 {
     private $jsonConverter;
     private $apiLinker;
@@ -24,8 +24,8 @@ class EditPostController extends AbstractController
         $this->toolFunctions = $toolFunctions;
     }
 
-    #[Route('/edit_post/{photoId}', name: 'edit_post')]
-    public function displayEditPost(Request $request, $photoId): Response
+    #[Route('/new_post', name: 'new_post')]
+    public function displayNewPost(Request $request): Response
     {
         $session = $request->getSession();
         $token = $session->get('token-session');
@@ -43,22 +43,19 @@ class EditPostController extends AbstractController
             $userId = null;
         }
 
-        $photo = $this->toolFunctions->getPhotoById($photoId);
-
-        return $this->render('edit_post/edit_post.html.twig', [
-            'controller_name' => 'EditPostController',
+        return $this->render('new_post/new_post.html.twig', [
+            'controller_name' => 'NewPostController',
             'actualUserName' =>  $userName,
             'actualUserRole' => $userRole,
-            'actualUserId' => $userId,
-            'idPhoto' => $photoId,
-            'photo' => $photo
+            'actualUserId' => $userId
         ]);
     }
 
-    #[Route('/update_post/{photoId}', name: 'update_post')]
-    public function updatePost(Request $request, $photoId): Response
+    #[Route('/add_post', name: 'add_post')]
+    public function addPost(Request $request): Response
     {
-        $newDescription = $request->request->get('description');
+
+        $description = $request->request->get('description');
         $session = $request->getSession();
         $token = $session->get('token-session');
         $payloadData = $this->toolFunctions->getPayload($token);
@@ -66,51 +63,39 @@ class EditPostController extends AbstractController
             return $this->redirect('/logout');
         }
 
-        if ($payloadData != null) {
-            $userName = $payloadData->username; // Nom de l'utilisateur
-            $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
-            $userId = $this->toolFunctions->getIdByUsername($userName);
-        } else {
-            $userRole = null;
-            $userName = null;
-            $userId = null;
-            return $this->redirect('/login');
-        }
 
         if ($payloadData != null) {
-            // Gestion de l'image
+
+            $userName = $payloadData->username; // Nom de l'utilisateur
             $image = $request->files->get('photo');
-            if (isset($image) && isset($newDescription)) {
+            if (isset($image)) {                
                 $imageData = file_get_contents($image->getPathname());
                 $imageSend = base64_encode($imageData);
+
+                $userId = $this->toolFunctions->getIdByUsername($request->request->get('comment_username'));
+
+                if (isset($description)) {
+                    $descript = $description;
+                } else {
+                    $descript = null;
+                }
 
                 $data = [
                     "image" => $imageSend,
-                    "description" => $newDescription
+                    "user_id" => $userId,
+                    "description" => $descript
                 ];
-            } else if (isset($image) && !isset($newDescription)) {
-                $imageData = file_get_contents($image->getPathname());
-                $imageSend = base64_encode($imageData);
 
-                $data = [
-                    "image" => $imageSend
-                ];
-            } else if (!isset($image) && isset($newDescription)) {
-                $data = [
-                    "description" => $newDescription
-                ];
+                // Formez le JSON à envoyer
+                $jsonData = json_encode($data);
+                $this->apiLinker->postData('/photos', $jsonData, $token);
+                return $this->redirect('/');
             } else {
-                $data = [];
+                return $this->render("new_post/new_post.html.twig", ['error' => 'Aucune image séléctionnée', 'actualUserName' =>  $userName]);
             }
-
-
-            // Formatez les données en JSON
-            $jsonData = json_encode($data);
-            $this->apiLinker->putData('/photos/' . $photoId, $jsonData, $token);
-
-            return $this->redirect('/');
         }
 
+        // Gérez ici le cas où le formulaire n'est pas soumis ou s'il y a des erreurs
         return $this->redirect('/login');
     }
 }

@@ -1,0 +1,29 @@
+{% extends 'parent.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/edit_post.css') }}" type="text/css">
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<h1>Ajouter un Post</h1>
+		<form action="{{ path('add_post') }}" method="POST" enctype="multipart/form-data">
+			<div class="form-group">
+				<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+				<label for="photo">Photo :</label>
+				<input type="file" id="photo" name="photo" >
+			</div>
+			<div class="form-group">
+				<label for="description">Description :</label>
+				<textarea id="description" name="description" rows="4" placeholder="Ecrivez votre descritpion ici..."></textarea>
+			</div>
+			{% if error is defined %}
+				<a style="color:red; display:flex; justify-content:center;">
+					{{ error }}
+				</a>
+			{% endif %}
+			<button type="submit" class="button-save">Ajouter ce post</button>
+			<a href="/" class="button-cancel">Annuler</a>
+		</form>
+	</div>
+{% endblock %}

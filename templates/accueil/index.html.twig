@@ -9,6 +9,9 @@
 	{{ dump(actualUserId) }}
 	<div class="container with-margin">
 		<div class="row">
+		{% if allPhotos is empty %}
+            <p>Aucune photo disponible pour le moment.</p>
+        {% else %}
 			{% for photo in allPhotos %}
 				<div class="col-md-6 col-lg-6 mb-6">
 					<div class="card-center">
@@ -27,7 +30,7 @@
 									<span class="date">{{ photo.datePoste }}</span>
 								</p>
 
-								{% if actualUserId == photo.user.id %}
+								{% if actualUserId == photo.user.id or actualUserRole == "ROLE_ADMIN" %}
 									{% if photo.description != null %}
 										<div class="des-supp-modif">
 											<h5 class="card-title">{{ photo.description }}</h5>
@@ -131,7 +134,7 @@
 										<div class="comment">
 											<div class="comment-user-date">
 												<strong class="comment-user">@{{ comment.user.username }}</strong>
-												{% if actualUserId == comment.user.id %}
+												{% if actualUserId == comment.user.id or actualUserRole == "ROLE_ADMIN" %}
 													<div class="comment-supp-modif">
 														<div class="action-button">
 															<button class="suppr-comment-button" onclick="toggleSupprComment({{ comment.id }})">
@@ -240,7 +243,7 @@
 															<div class="intern-comment">
 																<div class="comment-user-date">
 																	<strong class="comment-user">@{{ childComment.user.username }}</strong>
-																	{% if actualUserId == childComment.user.id %}
+																	{% if actualUserId == childComment.user.id or actualUserRole == "ROLE_ADMIN" %}
 																		<div class="comment-supp-modif">
 																			<div class="action-button">
 																				<button class="suppr-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
@@ -356,6 +359,7 @@ repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block'
 
 
 			{% endfor %}
+		{% endif %}
 		</div>
 	</div>
 
