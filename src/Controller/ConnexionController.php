@@ -122,6 +122,9 @@ class ConnexionController extends AbstractController {
 
         
     }
+
+
+    
     #[Route('/register', methods: ['POST'])]
 public function register(Request $request) {
     $username = $request->request->get('username');
