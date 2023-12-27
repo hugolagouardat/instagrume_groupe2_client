@@ -1,0 +1,40 @@
+{% extends 'parent.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/profil.css') }}" type="text/css">
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="profile-section">
+			<div class="profile-details">
+				<div
+					class="profile-left">
+					<!-- Photo de profil -->
+					<img src="http://127.0.0.1:3000/images/photos/{{ actualUser.avatar }}" alt="Profile Picture" class="profile-picture">
+				</div>
+				<div
+					class="profile-right">
+					<!-- Nom d'utilisateur -->
+					<h2>{{ actualUserName }}</h2>
+					<!-- Rôle -->
+                    {% if actualUserRole == "ROLE_ADMIN" %}
+					    <p>Rôle : Administrateur </p>
+                    {% else %} 
+                        <p>Rôle : Utilisateur </p>
+                    {% endif %}
+					<!-- Changer le mot de passe -->
+					<a href="3">Changer son mot de passe</a>
+				</div>
+			</div>
+			<div
+				class="profile-description">
+				<!-- Description de l'utilisateur -->
+				<p>{{ actualUser.description }}</p>
+			</div>
+            <hr>
+
+            <p>{{ allPhotosUser}}</p>
+		</div>
+	</div>
+{% endblock %}

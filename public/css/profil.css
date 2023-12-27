@@ -1,0 +1,29 @@
+.profile-section {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.profile-details {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-right {
+    text-align: left;
+}
+
+.profile-left {
+    margin-right: 20px; /* Espacement entre la photo et les détails */
+}
+
+.profile-description {
+    /* Styliser la description si nécessaire */
+}
+
+/* Style pour l'image du profil */
+.profile-picture {
+    max-height: 150px;
+    width: auto; /* Redimensionnement automatique en largeur */
+}
