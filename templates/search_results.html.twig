@@ -1,13 +1,34 @@
 {% extends 'parent.html.twig' %}
 
+{% block titre %}
+    Recherche Utilisateur - Instagrume
+{% endblock %}
+
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/accueil.css') }}" type="text/css">
 {% endblock %}
 
 {% block content %}
-	{{ dump(actualUserName) }}
-	{{ dump(actualUserId) }}
-	<div class="container with-margin">
+	{{ dump(user) }}
+
+    <div class="container with-margin">
+        {% if user %}
+            <h2>Résultats de Recherche</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <img src="http://127.0.0.1:3000/images/avatar/{{ user.avatar }}" class="avatar-img rounded-circle me-2" alt="Avatar" style="width: 40px; height: 40px;">
+                        <h5 class="mb-0">{{ user['username'] }}</h5>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <h2>Aucun utilisateur trouvé</h2>
+            <p>Aucun utilisateur correspondant à votre recherche n'a été trouvé.</p>
+        {% endif %}
+    </div>
+
+<div class="container with-margin">
 		<div class="row">
 			{% if allPhotos is empty %}
 				<p>Aucune photo disponible pour le moment.</p>
@@ -459,3 +480,5 @@ return null;
 
 
 {% endblock %}
+
+

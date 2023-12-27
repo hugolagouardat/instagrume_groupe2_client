@@ -13,17 +13,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto"> <!-- Aligner à droite -->
+				<form action="/search" method="get">
+					<input type="text" name="username" placeholder="Recherche d'utilisateur...">
+					<button type="submit">Rechercher</button>
+				</form>
                 {% if actualUserName %}
                     <li class="nav-item">
                         <a class="nav-link" href="/profil">Profil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/new_post">Nouveau post</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/logout">Déconnexion</a>
                     </li>
-                {% else %}                    
+                {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="/login">Connexion</a>
                     </li>
