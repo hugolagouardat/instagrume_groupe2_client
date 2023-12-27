@@ -11,7 +11,7 @@ use App\Service\JsonConverter;
 use App\Service\ToolFunctions;
 use App\Service\ApiLinker;
 
-class EditPostController extends AbstractController
+class EditProfilController extends AbstractController
 {
     private $jsonConverter;
     private $apiLinker;
@@ -24,8 +24,8 @@ class EditPostController extends AbstractController
         $this->toolFunctions = $toolFunctions;
     }
 
-    #[Route('/edit_post/{photoId}', name: 'edit_post')]
-    public function displayEditPost(Request $request, $photoId): Response
+    #[Route('/edit_profil', name: 'edit_profil')]
+    public function displayEditProfil(Request $request): Response
     {
         $session = $request->getSession();
         $token = $session->get('token-session');
@@ -37,26 +37,25 @@ class EditPostController extends AbstractController
             $userName = $payloadData->username; // Nom de l'utilisateur
             $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
             $userId = $this->toolFunctions->getIdByUsername($userName);
+            $user = $this->toolFunctions->getUserByUsername($userName);
+
         } else {
             $userRole = null;
             $userName = null;
             $userId = null;
         }
 
-        $photo = $this->toolFunctions->getPhotoById($photoId);
-
-        return $this->render('edit_post/edit_post.html.twig', [
-            'controller_name' => 'EditPostController',
+        return $this->render('edit_profil/edit_profil.html.twig', [
+            'controller_name' => 'EditProfilController',
             'actualUserName' =>  $userName,
             'actualUserRole' => $userRole,
             'actualUserId' => $userId,
-            'idPhoto' => $photoId,
-            'photo' => $photo
+            'user' => $user
         ]);
     }
 
-    #[Route('/update_post/{photoId}', name: 'update_post')]
-    public function updatePost(Request $request, $photoId): Response
+    #[Route('/update_profil/{userId}', name: 'update_profil')]
+    public function updatePost(Request $request, $userId): Response
     {
         $session = $request->getSession();
         $token = $session->get('token-session');
@@ -68,7 +67,8 @@ class EditPostController extends AbstractController
         if ($payloadData != null) {
             $userName = $payloadData->username; // Nom de l'utilisateur
             $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
-            $userId = $this->toolFunctions->getIdByUsername($userName);
+            $user = $this->toolFunctions->getUserByUsername($userName);
+
         } else {
             $userRole = null;
             $userName = null;
@@ -78,22 +78,30 @@ class EditPostController extends AbstractController
 
         if ($payloadData != null) {
             // Gestion de l'image
-            $image = $request->files->get('photo');
+            $image = $request->files->get('avatar');
             $newDescription = $request->request->get('description');
+            $newPassword = $request->request->get('password');
+            $confirmPassword = $request->request->get('confirm_password');
 
             $imageData = isset($image) ? file_get_contents($image->getPathname()) : null;
             $imageSend = isset($image) ? base64_encode($imageData) : null;
 
+            if ($newPassword != $confirmPassword) {
+                return $this->render("edit_profil/edit_profil.html.twig", ['error' => 'Les mots de passes ne correspondent pas.', 'actualUserName' =>  $userName, 'user' =>  $user]);
+            }            
+
             $data = [
-                "image" => isset($image) ? $imageSend : null,
-                "description" => isset($newDescription) ? $newDescription : null
+                "avatar" => isset($image) ? $imageSend : null,
+                "description" => isset($newDescription) ? $newDescription : null,
+                "password" => isset($newPassword) ? $newPassword : null
             ];
 
-            // Formatez les données en JSON
-            $jsonData = json_encode($data);
-            $this->apiLinker->putData('/photos/' . $photoId, $jsonData, $token);
 
-            return $this->redirect('/');
+            // Formatez les données en JSON
+            $jsonData = json_encode($data); 
+            $this->apiLinker->putData('/users/' . $userId, $jsonData, $token);
+
+            return $this->redirect('/profil');
         }
 
         return $this->redirect('/login');

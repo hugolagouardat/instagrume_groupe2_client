@@ -1,6 +1,6 @@
 .profile-section {
     text-align: center;
-    margin-top: 10px;
+    margin: 10px 10px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -35,15 +35,32 @@
 }
 
 .image-item {
-    width: calc(25% - 20px); /* Pour quatre images par ligne */
-    margin: 10px;
+    width: calc(26% - 20px); /* Pour quatre images par ligne */
+    margin: 5px;
     box-sizing: border-box;
     text-align: center;
+    height: 150px; /* Hauteur fixe pour chaque cadre d'image */
+    overflow: hidden; /* Cache le contenu supplémentaire des images trop grandes */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .card-img {
-    max-width: 60%;
-    height: auto;
+    max-width: 90%; 
+    max-height: 100%; 
+    min-width: 90%;
+    min-height: 100%;
     border: 2px solid black;
+    object-fit: contain; 
 }
 
+hr {
+    border: none;
+    border-top: 1px solid rgb(62, 62, 62); /* Définition de la bordure supérieure */
+    margin: 14px 0; /* Ajustement de la marge */
+}
+
+.profile-description p {
+    margin-bottom: 3px;
+}

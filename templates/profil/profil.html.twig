@@ -11,7 +11,7 @@
 				<div
 					class="profile-left">
 					<!-- Photo de profil -->
-					<img src="http://127.0.0.1:3000/images/photos/{{ actualUser.avatar }}" alt="Profile Picture" class="profile-picture">
+					<img src="http://127.0.0.1:3000/images/avatar/{{ actualUser.avatar }}" alt="Profile Picture" class="profile-picture">
 				</div>
 				<div
 					class="profile-right">
@@ -26,7 +26,7 @@
 						</p>
 					{% endif %}
 					<!-- Changer le mot de passe -->
-					<a href="3">Changer son mot de passe</a>
+					<a href="{{ path('edit_profil') }}">Modifier son profil</a>
 				</div>
 			</div>
 			<div
@@ -36,11 +36,15 @@
 			</div>
 			<hr>
 			<div class="image-gallery">
-				{% for photoUser in allPhotosUser %}
-					<div class="image-item">
-						<img src="http://127.0.0.1:3000/images/photos/{{ photoUser.image }}" class="card-img" alt="Photo">
-					</div>
-				{% endfor %}
+				{% if allPhotosUser is empty %}
+					<p>Aucune photo disponible pour le moment.</p>
+				{% else %}
+					{% for photoUser in allPhotosUser %}
+						<div class="image-item">
+							<img src="http://127.0.0.1:3000/images/photos/{{ photoUser.image }}" class="card-img" alt="Photo">
+						</div>
+					{% endfor %}
+				{% endif %}
 			</div>
 		</div>
 	</div>
