@@ -18,11 +18,13 @@
 					<!-- Nom d'utilisateur -->
 					<h2>{{ actualUserName }}</h2>
 					<!-- Rôle -->
-                    {% if actualUserRole == "ROLE_ADMIN" %}
-					    <p>Rôle : Administrateur </p>
-                    {% else %} 
-                        <p>Rôle : Utilisateur </p>
-                    {% endif %}
+					{% if actualUserRole == "ROLE_ADMIN" %}
+						<p>Rôle : Administrateur
+						</p>
+					{% else %}
+						<p>Rôle : Utilisateur
+						</p>
+					{% endif %}
 					<!-- Changer le mot de passe -->
 					<a href="3">Changer son mot de passe</a>
 				</div>
@@ -32,9 +34,14 @@
 				<!-- Description de l'utilisateur -->
 				<p>{{ actualUser.description }}</p>
 			</div>
-            <hr>
-
-            <p>{{ allPhotosUser}}</p>
+			<hr>
+			<div class="image-gallery">
+				{% for photoUser in allPhotosUser %}
+					<div class="image-item">
+						<img src="http://127.0.0.1:3000/images/photos/{{ photoUser.image }}" class="card-img" alt="Photo">
+					</div>
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 {% endblock %}

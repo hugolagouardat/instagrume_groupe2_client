@@ -1,6 +1,10 @@
 .profile-section {
     text-align: center;
     margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    flex-direction: column;
 }
 
 .profile-details {
@@ -18,12 +22,28 @@
     margin-right: 20px; /* Espacement entre la photo et les détails */
 }
 
-.profile-description {
-    /* Styliser la description si nécessaire */
-}
-
 /* Style pour l'image du profil */
 .profile-picture {
     max-height: 150px;
     width: auto; /* Redimensionnement automatique en largeur */
 }
+ 
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.image-item {
+    width: calc(25% - 20px); /* Pour quatre images par ligne */
+    margin: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card-img {
+    max-width: 60%;
+    height: auto;
+    border: 2px solid black;
+}
+
