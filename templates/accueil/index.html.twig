@@ -308,11 +308,11 @@ commentForm.style.display = 'none';
 																		<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
 																			<img src="{{ asset('images/like.png') }}" class="image-like-commentaire">
 																		</button>
-																		{{ comment.likesCount }}
+																		{{ childComment.likesCount }}
 																		<button class="like-button" data-comment-id="{{ comment.id }}" data-action="dislike-comment">
 																			<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 																		</button>
-																		{{ comment.dislikesCount }}
+																		{{ childComment.dislikesCount }}
 																		<button class="rep-rep-comment-button" onclick="toggleRepRepCommentForm({{ childComment.id }})">Répondre</button>
 
 																	</div>
