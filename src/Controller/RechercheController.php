@@ -106,4 +106,33 @@ class RechercheController extends AbstractController
             'allPhotosUser' => $allPhotosUser
         ]);
     }
+
+    #[Route('/handle_ban/{userId}', name: 'handle_ban', methods: ['POST'])]
+    public function handleBan(Request $request, $userId): Response
+    {
+        $session = $request->getSession();
+        $token = $session->get('token-session');
+        $payloadData = $this->toolFunctions->getPayload($token);
+
+        if ($payloadData->roles[0] !== 'ROLE_ADMIN') {
+            return $this->redirectToRoute('search');
+        }
+
+        $userDataResponse = $this->apiLinker->getData('/users/' . $userId, $token);
+        $userData = json_decode($userDataResponse, true);
+
+        if (is_null($userData) || !isset($userData['username'])) {
+            // Ici, gérer l'erreur ou rediriger vers une page appropriée
+            return $this->redirectToRoute('/search?username=', ['username' => $userData['username']]);
+        }
+
+        $isCurrentlyBanned = $userData['ban'] ?? false;
+        $data = ['ban' => !$isCurrentlyBanned];
+        $jsonData = json_encode($data);
+
+        $this->apiLinker->putData('/users/' . $userId, $jsonData, $token);
+
+        return $this->redirectToRoute('/search?username=', ['username' => $userData['username']]);
+    }
+    
 }

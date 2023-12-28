@@ -99,9 +99,10 @@
 
 								<div class="comments-section">
 									<h6>Commentaires :
-										<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
+										{% if not photo.isLocked %}
+											<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
+										{% endif %}
 									</h6>
-
 									<script>
 										function toggleCommentForm(button) {
 											const commentForm = $(button).closest('.comments-section').find('.comment-form');
@@ -207,8 +208,9 @@
 														<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 													</button>
 													{{ comment.dislikesCount }}
-
+													{% if not photo.isLocked %}
 													<button class="rep-comment-button" onclick="toggleRepCommentForm({{ comment.id }})">Répondre</button>
+													{% endif %}
 												</div>
 												<!-- Formulaire pour ajouter une commentaire -->
 												<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">
@@ -313,7 +315,9 @@
 																			<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
 																		</button>
 																		{{ childComment.dislikesCount }}
+																		{% if not photo.isLocked %}
 																		<button class="rep-rep-comment-button" onclick="toggleRepRepCommentForm({{ childComment.id }})">Répondre</button>
+																		{% endif %}
 
 																	</div>
 
@@ -336,7 +340,6 @@
 																	</script>
 
 																</div>
-
 															</div>
 														{% endfor %}
 													</div>
