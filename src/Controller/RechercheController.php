@@ -86,6 +86,7 @@ class RechercheController extends AbstractController
         } else {
             $actualUserRole = null;
             $actualUserName = null;
+            $actualUserId = null;
         }
 
         $userId = $this->toolFunctions->getIdByUsername($userName);

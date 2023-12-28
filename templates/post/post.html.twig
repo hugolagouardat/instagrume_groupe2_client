@@ -72,23 +72,23 @@
 
 							<script>
 								function toggleSupprPhoto(photoId) {
-if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
-fetch (`http://127.0.0.1:3000/api/photos/${photoId}`, {
-method: 'DELETE',
-headers: {
-'Content-Type': 'application/json'
-}
-}).then(response => { // Gérer la réponse de la requête
-if (response.ok) {
-location.reload();
-} else { // Gérer les erreurs en cas de problème lors de la suppression
-console.error('La suppression de la photo a échoué.');
-}
-}).catch(error => { // Gérer les erreurs liées à la requête
-console.error('Erreur lors de la suppression de la photo :', error);
-});
-}
-}
+									if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
+									fetch (`http://127.0.0.1:3000/api/photos/${photoId}`, {
+									method: 'DELETE',
+									headers: {
+									'Content-Type': 'application/json'
+									}
+									}).then(response => { // Gérer la réponse de la requête
+									if (response.ok) {
+									window.location.href = "/profil";
+									} else { // Gérer les erreurs en cas de problème lors de la suppression
+									console.error('La suppression de la photo a échoué.');
+									}
+									}).catch(error => { // Gérer les erreurs liées à la requête
+									console.error('Erreur lors de la suppression de la photo :', error);
+									});
+									}
+									}
 							</script>
 
 						</div>
