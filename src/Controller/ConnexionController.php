@@ -36,51 +36,63 @@ class ConnexionController extends AbstractController {
             $userName = $payloadData->username; // Nom de l'utilisateur
             $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
             $userId = $this->toolFunctions->getIdByUsername($userName);
+            $user = $this->toolFunctions->getUserByUsername($userName);
 
         } else {
             $userRole = null;
             $userName = null;
             $userId = null;
+            $user = null;
         }
 
         return $this->render('login.html.twig', [
             'controller_name' => 'ConnexionController',
             'actualUserName' =>  $userName,
             'actualUserRole' => $userRole,
-            'actualUserId' => $userId
+            'actualUserId' => $userId,
+            'actualUser' => $user
         ]);
     }
 
     #[Route('/login', methods: ['POST'])]
-    public function connexion(Request $request) {
-        $username = $request->request->get('username');
-        $password = $request->request->get('password');
-    
-        if (!empty($username) && !empty($password)) {
-            $data = $this->jsonConverter->encodeToJson(['username' => $username, 'password' => $password]);
-            $response = $this->apiLinker->postData('/login', $data, null);
-            $responseObject = json_decode($response);
-    
-            // Vérifiez si le token est récupéré avec succès
-            if (isset($responseObject->token)) {
-                // Stockez le token dans la session
-                $session = $request->getSession();
-                $session->set('token-session', $responseObject->token);
-    
-                // Redirigez vers la page d'accueil ou une autre page après la connexion réussie
-                return $this->redirect('/');
-                
-            } else if ($response == 'Les champs ne doivent pas être vide') {
-                return $this->render("login.html.twig", ['error' => 'Les champs ne doivent pas être vide.', 'actualUserName' => null]);
-            } else if ($response == 'Username invalide') {
-                return $this->render("login.html.twig", ['error' => 'Identifiant invalide.', 'actualUserName' => null]);
-            } else if ($response == 'Password invalide') {
-                return $this->render("login.html.twig", ['error' => 'Mot de passe invalide.', 'actualUserName' => null]);
+public function connexion(Request $request) {
+    $username = $request->request->get('username');
+    $password = $request->request->get('password');
+
+    if (!empty($username) && !empty($password)) {
+        $data = $this->jsonConverter->encodeToJson(['username' => $username, 'password' => $password]);
+        $response = $this->apiLinker->postData('/login', $data, null);
+        $responseObject = json_decode($response);
+
+        // Vérifiez si le token est récupéré avec succès
+        if (isset($responseObject->token)) {
+            // Vérifiez le statut de bannissement de l'utilisateur
+            $userResponse = $this->apiLinker->readData('/users/' . $username);
+            $user = json_decode($userResponse);
+
+            if ($user && $user->ban) {
+                // Si l'utilisateur est banni, refusez la connexion
+                return $this->render("login.html.twig", ['error' => 'Vous avez été banni.', 'actualUserName' => null]);
             }
+
+            // Stockez le token dans la session si l'utilisateur n'est pas banni
+            $session = $request->getSession();
+            $session->set('token-session', $responseObject->token);
+
+            // Redirigez vers la page d'accueil ou une autre page après la connexion réussie
+            return $this->redirect('/');
+            
+        } else if ($response == 'Les champs ne doivent pas être vide') {
+            return $this->render("login.html.twig", ['error' => 'Les champs ne doivent pas être vide.', 'actualUserName' => null]);
+        } else if ($response == 'Username invalide') {
+            return $this->render("login.html.twig", ['error' => 'Identifiant invalide.', 'actualUserName' => null]);
+        } else if ($response == 'Password invalide') {
+            return $this->render("login.html.twig", ['error' => 'Mot de passe invalide.', 'actualUserName' => null]);
         }
-        
-        return $this->redirect('/login');
     }
+    
+    return $this->redirect('/login');
+}
     
 
     #[Route('/logout', methods: ['GET'])]
@@ -106,7 +118,6 @@ class ConnexionController extends AbstractController {
             $userName = $payloadData->username; // Nom de l'utilisateur
             $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
             $userId = $this->toolFunctions->getIdByUsername($userName);
-
         } else {
             $userRole = null;
             $userName = null;
