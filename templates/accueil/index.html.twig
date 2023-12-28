@@ -357,102 +357,161 @@ repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block'
 			{% endif %}
 		</div>
 	</div>
-
 	<script>
 		document.querySelectorAll('.like-button').forEach(button => {
-button.addEventListener('click', function () {
-const isPhotoLike = this.getAttribute('data-action') === 'like';
-const photoId = this.getAttribute('data-photo-id');
-const userId = '{{ actualUserId }}'; // Remplissez avec l'ID de l'utilisateur actuel
+			button.addEventListener('click', function () {
+				const isPhotoLike = this.getAttribute('data-action') === 'like';
+				const isPhotoDislike = this.getAttribute('data-action') === 'dislike';
+				const photoId = this.getAttribute('data-photo-id');
+				const userId = '{{ actualUserId }}'; // Remplissez avec l'ID de l'utilisateur actuel
 
-const cookieName = `liked-${userId}-${photoId}`;
-const hasUserLiked = getCookie(cookieName); // Vérifie le cookie
+				const likeCookieName = `liked-${userId}-${photoId}`;
+				const dislikeCookieName = `disliked-${userId}-${photoId}`;
+				const hasUserLiked = getCookie(likeCookieName); // Vérifie le cookie de like
+				const hasUserDisliked = getCookie(dislikeCookieName); // Vérifie le cookie de dislike
 
-if (isPhotoLike && hasUserLiked) { // Récupérez l'ID du like à partir du bouton parent
-const likeId = this.getAttribute('data-like-id');
+				if (isPhotoLike && hasUserLiked) { // Récupérez l'ID du like à partir du bouton parent
+					const likeId = this.getAttribute('data-like-id');
 
-// Si l'utilisateur a déjà liké, envoie une requête pour supprimer le like
-fetch (`http://127.0.0.1:3000/api/photolikes/${likeId}`, {method: 'DELETE'}).then(response => {
-if (!response.ok) {
-throw new Error('Erreur lors de la suppression du like');
-}
-return response.json();
-}).then(data => {
-console.log('Like supprimé avec succès:', data);
+					// Si l'utilisateur a déjà liké, envoie une requête pour supprimer le like
+					fetch (`http://127.0.0.1:3000/api/photolikes/${likeId}`, {method: 'DELETE'}).then(response => {
+						if (!response.ok) {
+							throw new Error('Erreur lors de la suppression du like');
+						}
+						return response.json();
+					}).then(data => {
+						console.log('Like supprimé avec succès:', data);
 
-const likeCountElement = document.getElementById (`like-count-${photoId}`);
-likeCountElement.textContent = data.updatedLikeCount; // Mettre à jour le nombre de likes
+						const likeCountElement = document.getElementById (`like-count-${photoId}`);
+						likeCountElement.textContent = data.updatedLikeCount; // Mettre à jour le nombre de likes
 
-setCookieWithoutExpiration(cookieName, ''); // Supprimer le cookie
+						setCookieWithoutExpiration(cookieName, ''); // Supprimer le cookie
 
-this.classList.remove('liked'); // Retirer la classe 'liked' pour le style
-this.disabled = false;
-// Activer à nouveau le bouton
+						this.classList.remove('liked'); // Retirer la classe 'liked' pour le style
+						// Activer à nouveau le bouton
 
-// Utilisation de l'identifiant du like supprimé dans votre interface
-const deletedLikeId = data.likeId; // Récupérer l'ID du like supprimé
-}).catch(error => {
-console.error('Erreur:', error.message);
-// Gérer l'erreur si nécessaire
-});
-} else {
+						// Utilisation de l'identifiant du like supprimé dans votre interface
+						const deletedLikeId = data.likeId; // Récupérer l'ID du like supprimé
+					}).catch(error => {
+						console.error('Erreur:', error.message);
+						// Gérer l'erreur si nécessaire
+					});
+				} else if (isPhotoLike) {
+					fetch('http://127.0.0.1:3000/api/photolikes', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							photoId: photoId,
+							userId: userId,
+							likeType: true // True pour like, false pour dislike
+						})
+					}).then(response => {
+						if (!response.ok) {
+							throw new Error('Erreur lors de l\'ajout du like');
+						}
+						return response.json();
+					}).then(data => { // Gérer la réponse si nécessaire
+						console.log('Like ajouté avec succès:', data);
+						// Mettre à jour le nombre de likes dans l'interface
+						const likeCountElement = document.getElementById (`like-count-${photoId}`);
+						likeCountElement.textContent = data.updatedLikeCount;
 
-fetch('http://127.0.0.1:3000/api/photolikes', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
-body: JSON.stringify(
-{
-photoId: photoId, userId: userId, likeType: true // True pour like, false pour dislike
-}
-)
-}).then(response => {
-if (!response.ok) {
-throw new Error('Erreur lors de l\'ajout du like');
-}
-return response.json();
-}).then(data => { // Gérer la réponse si nécessaire
-console.log('Like ajouté avec succès:', data);
-// Mettre à jour le nombre de likes dans l'interface
-const likeCountElement = document.getElementById (`like-count-${photoId}`);
-likeCountElement.textContent = data.updatedLikeCount;
+						// Mettre à jour le cookie de like et supprimer le cookie de dislike s'il existe
+						setCookieWithoutExpiration(likeCookieName, 'true');
+						setCookieWithoutExpiration(dislikeCookieName, '');
 
-// Stocker le like dans un cookie
-setCookieWithoutExpiration(`liked-${userId}-${photoId}`, 'true');
+						// Désactiver le bouton de like après le premier clic
+						this.classList.add('liked');
+					}).catch(error => {
+						console.error('Erreur:', error.message);
+						// Gérer l'erreur si nécessaire
+					});
+				} else if (isPhotoDislike && hasUserLiked) { // Récupérez l'ID du like à partir du bouton parent
+					const likeId = this.getAttribute('data-like-id');
 
-// Désactiver le bouton de like après le premier clic
-this.classList.add('liked');
-this.disabled = true;
-}).catch(error => {
-console.error('Erreur:', error.message);
-// Gérer l'erreur si nécessaire
-});
-}
-});
-});
+					// Si l'utilisateur a déjà liké, envoie une requête pour supprimer le like
+					fetch (`http://127.0.0.1:3000/api/photolikes/${dislikeId}`, {method: 'DELETE'}).then(response => {
+						if (!response.ok) {
+							throw new Error('Erreur lors de la suppression du dislike');
+						}
+						return response.json();
+					}).then(data => {
+						console.log('Dislike supprimé avec succès:', data);
 
-// Fonctions utilitaires pour les cookies
-function setCookieWithoutExpiration(name, value) {
-document.cookie = `${name}=${value};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
-}
+						const dislikeCountElement = document.getElementById (`dislike-count-${photoId}`);
+						dislikeCountElement.textContent = data.updateddislikeCount; // Mettre à jour le nombre de likes
 
-function getCookie(name) {
-const cookieName = `${name}=`;
-const decodedCookie = decodeURIComponent(document.cookie);
-const cookieArray = decodedCookie.split(';');
+						setCookieWithoutExpiration(cookieName, ''); // Supprimer le cookie
 
-for (let i = 0; i < cookieArray.length; i++) {
-let cookie = cookieArray[i];
-while (cookie.charAt(0) === ' ') {
-cookie = cookie.substring(1);
-}
-if (cookie.indexOf(cookieName) === 0) {
-return cookie.substring(cookieName.length, cookie.length);
-}
-}
-return null;
-}
+						this.classList.remove('disliked'); // Retirer la classe 'liked' pour le style
+						// Activer à nouveau le bouton
+
+						// Utilisation de l'identifiant du like supprimé dans votre interface
+						const deletedDislikeId = data.dislikeId; // Récupérer l'ID du like supprimé
+					}).catch(error => {
+						console.error('Erreur:', error.message);
+						// Gérer l'erreur si nécessaire
+					});
+				} else if (isPhotoDislike) {
+					fetch('http://127.0.0.1:3000/api/photolikes', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							photoId: photoId,
+							userId: userId,
+							likeType: false // True pour like, false pour dislike
+						})
+					}).then(response => {
+						if (!response.ok) {
+							throw new Error('Erreur lors de l\'ajout du dislike');
+						}
+						return response.json();
+					}).then(data => { // Gérer la réponse si nécessaire
+						console.log('Dislike ajouté avec succès:', data);
+
+						// Mettre à jour le nombre de likes dans l'interface
+						const dislikeCountElement = document.getElementById (`dislike-count-${photoId}`);
+						dislikeCountElement.textContent = data.updatedDislikeCount;
+
+						// Mettre à jour le cookie de dislike et supprimer le cookie de like s'il existe
+						setCookieWithoutExpiration(dislikeCookieName, 'true');
+						setCookieWithoutExpiration(likeCookieName, '');
+
+						// Désactiver le bouton de dislike après le premier clic
+						this.classList.add('disliked');
+					}).catch(error => {
+						console.error('Erreur:', error.message);
+						// Gérer l'erreur si nécessaire
+					});
+				}
+			});
+		});
+
+		// Fonctions utilitaires pour les cookies
+		function setCookieWithoutExpiration(name, value) {
+			document.cookie = `${name}=${value};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
+		}
+
+		function getCookie(name) {
+			const cookieName = `${name}=`;
+			const decodedCookie = decodeURIComponent(document.cookie);
+			const cookieArray = decodedCookie.split(';');
+
+			for (let i = 0; i < cookieArray.length; i++) {
+				let cookie = cookieArray[i];
+				while (cookie.charAt(0) === ' ') {
+					cookie = cookie.substring(1);
+				}
+				if (cookie.indexOf(cookieName) === 0) {
+					return cookie.substring(cookieName.length, cookie.length);
+				}
+			}
+			return null;
+		}
 	</script>
 
 
