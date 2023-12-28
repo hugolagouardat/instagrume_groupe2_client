@@ -41,9 +41,6 @@ class RechercheController extends AbstractController
             return $this->redirect('/logout');
         }
 
-        
-
-          
         if ($payloadData != null) {
             $userName = $payloadData->username; // Nom de l'utilisateur
             $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
@@ -58,10 +55,7 @@ class RechercheController extends AbstractController
         if ($apiResponse) {
             $userData = json_decode($apiResponse, true);
 
-            // Obtenir les photos de l'utilisateur
-            $photosResponse = $this->apiLinker->readData("/photos/user/" . $userData['id']);
-            $allPhotos = json_decode($photosResponse, true);
-            $allComments = json_decode($this->apiLinker->readData("/commentaires"));}
+        }
 
         return $this->render('search_results.html.twig', [
             'controller_name' => 'RechercheController',
@@ -69,49 +63,13 @@ class RechercheController extends AbstractController
             'actualUserRole' => $userRole,
             'actualUserId' => $userId,
             'user' => $userData,
-            'allPhotos' => $allPhotos,
-            'allComments' => $allComments
-
+            'userSearch' => $username
         ]);
     }
-    #[Route('/add_comment', name: 'add_comment')]
-    public function addCommentaire(Request $request): Response
+
+    #[Route('/search_profil/{userName}', name: 'search_profil')]
+    public function searchProfil(Request $request, $userName): Response
     {
-
-        $textToAdd = $request->request->get('commentaire');
-        $session = $request->getSession();
-        $token = $session->get('token-session');
-        $payloadData = $this->toolFunctions->getPayload($token);
-        if ($this->toolFunctions->isTokenExpirated($payloadData)) {
-            return $this->redirect('/logout');
-        }
-
-
-        if ($payloadData != null) {
-
-            $userId = $this->toolFunctions->getIdByUsername($request->request->get('comment_username'));
-            $senderPostId = intval($request->request->get('comment_photo_id'));
-            $data = [
-                "user_id" => $userId,
-                "description" => $textToAdd
-            ];
-
-            // Formez le JSON à envoyer
-            $jsonData = json_encode($data);
-            $this->apiLinker->postData('/photos/' . $senderPostId . '/commentaires', $jsonData, $token);
-            return $this->redirect('/');
-        }
-
-        // Gérez ici le cas où le formulaire n'est pas soumis ou s'il y a des erreurs
-
-        return $this->redirect('/login');
-    }
-
-    #[Route('/rep_comment/{idParentComment}/{userToAnnote}', name: 'rep_comment')]
-    public function addReponse(Request $request, $idParentComment, $userToAnnote): Response
-    {
-
-        $textToAdd = $request->request->get('commentaire');
         $session = $request->getSession();
         $token = $session->get('token-session');
         $payloadData = $this->toolFunctions->getPayload($token);
@@ -120,81 +78,31 @@ class RechercheController extends AbstractController
         }
 
         if ($payloadData != null) {
-            $userName = $payloadData->username; // Nom de l'utilisateur
-            $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
-            $userId = $this->toolFunctions->getIdByUsername($userName);
-        } else {
-            $userRole = null;
-            $userName = null;
-            $userId = null;
-            return $this->redirect('/login');
-        }
+            $actualUserName = $payloadData->username; // Nom de l'utilisateur
+            $actualUserRole = $payloadData->roles[0]; // Rang de l'utilisateur
+            $actualUserId = $this->toolFunctions->getIdByUsername($actualUserName);
 
-        if ($payloadData != null) {
-
-            $userId = $this->toolFunctions->getIdByUsername($request->request->get('comment_username'));
-            $senderPostId = intval($request->request->get('comment_photo_id'));
-            if ($userToAnnote != 'noUserToAnnote') {
-                $descript = ('@'.$userToAnnote.' '.$textToAdd);
-            }
-            else {
-                $descript = $textToAdd;
-            }
-            $data = [
-                "user_id" => $userId,
-                "description" => $descript,
-                "parent_comment_id" => $idParentComment
-            ];
-
-            // Formez le JSON à envoyer
-            $jsonData = json_encode($data);
-            $this->apiLinker->postData('/photos/' . $senderPostId . '/commentaires', $jsonData, $token);
-
-            return $this->redirect('/');
-        }
-
-        return $this->redirect('/login');
-    }
-
-    #[Route('/update_comment/{commentId}', name: 'update_comment')]
-    public function updateComment(Request $request, $commentId): Response
-    {
-        $newComment = $request->request->get('commentaire');
-        $session = $request->getSession();
-        $token = $session->get('token-session');
-        $payloadData = $this->toolFunctions->getPayload($token);
-        if ($this->toolFunctions->isTokenExpirated($payloadData)) {
-            return $this->redirect('/logout');
-        }
-
-        if ($payloadData != null) {
-            $userName = $payloadData->username; // Nom de l'utilisateur
-            $userRole = $payloadData->roles[0]; // Rang de l'utilisateur
-            $userId = $this->toolFunctions->getIdByUsername($userName);
-        } else {
-            $userRole = null;
-            $userName = null;
-            $userId = null;
-            return $this->redirect('/login');
-        }
-
-        if ($payloadData != null) {
             
-            if (isset($newComment)) {                
-                $data = [
-                    "description" => $newComment
-                ];
-            } else {
-                $data = [];
-            }
-
-            // Formatez les données en JSON
-            $jsonData = json_encode($data);
-            $this->apiLinker->putData('/commentaires/' . $commentId, $jsonData, $token);
-
-            return $this->redirect('/');
+        } else {
+            $actualUserRole = null;
+            $actualUserName = null;
         }
 
-        return $this->redirect('/login');
+        $userId = $this->toolFunctions->getIdByUsername($userName);
+        $user = $this->toolFunctions->getUserByUsername($userName);
+
+        $allPhotos = json_decode($this->apiLinker->readData("/photos"));
+        $allPhotosUser = $this->toolFunctions->getPhotoByUserId($userId);
+
+        return $this->render('profil/profil.html.twig', [
+            'controller_name' => 'ProfilController',
+            'allPhotos' => $allPhotos,
+            'actualUserName' =>  $actualUserName,
+            'actualUserRole' => $actualUserRole,
+            'actualUserId' => $actualUserId,
+            'user' => $user,
+            'userId' => $userId,
+            'allPhotosUser' => $allPhotosUser
+        ]);
     }
 }

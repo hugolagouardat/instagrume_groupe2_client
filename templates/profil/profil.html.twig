@@ -8,33 +8,33 @@
 	<div class="container">
 		<div class="profile-section">
 			<div class="profile-details">
-				<div
-					class="profile-left">
+				<div class="profile-left">
 					<!-- Photo de profil -->
 					<div class="card-img-profil">
-						<img src="http://127.0.0.1:3000/images/avatar/{{ actualUser.avatar }}" alt="Profile Picture" class="profile-img">
+						<img src="http://127.0.0.1:3000/images/avatar/{{ user.avatar }}" alt="Profile Picture" class="profile-img">
 					</div>
 				</div>
 				<div
 					class="profile-right">
 					<!-- Nom d'utilisateur -->
-					<h2>{{ actualUserName }}</h2>
+					<h2>{{ user.username }}</h2>
 					<!-- Rôle -->
-					{% if actualUserRole == "ROLE_ADMIN" %}
+					{% if user.roles[0] == "ROLE_ADMIN" %}
 						<p>Rôle : Administrateur
 						</p>
 					{% else %}
 						<p>Rôle : Utilisateur
 						</p>
 					{% endif %}
-					<!-- Changer le mot de passe -->
-					<a href="{{ path('edit_profil') }}">Modifier son profil</a>
+					{% if actualUserId == user.id %}
+						<a href="{{ path('edit_profil') }}">Modifier son profil</a>
+					{% endif %}
 				</div>
 			</div>
 			<div
 				class="profile-description">
 				<!-- Description de l'utilisateur -->
-				<p>{{ actualUser.description }}</p>
+				<p>{{ user.description }}</p>
 			</div>
 			<hr>
 			<div class="image-gallery">

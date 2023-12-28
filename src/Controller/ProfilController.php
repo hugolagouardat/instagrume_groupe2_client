@@ -54,7 +54,7 @@ class ProfilController extends AbstractController
             'actualUserName' =>  $userName,
             'actualUserRole' => $userRole,
             'actualUserId' => $userId,
-            'actualUser' => $user,
+            'user' => $user,
             'allPhotosUser' => $allPhotosUser
         ]);
     }

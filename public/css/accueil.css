@@ -315,3 +315,17 @@
 .image-suppr {
     margin-bottom: 2px;
 }
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 80%
+}
+
+.center h2{
+    display: flex;
+    justify-content: center;
+}
+

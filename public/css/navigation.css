@@ -3,3 +3,34 @@
     height: 30px;
     margin-right: 10px;
 }
+
+
+/* navigation.css */
+/* Style pour la barre de recherche */
+.search-form {
+    display: flex;
+    align-items: center;
+    margin-top: 8px; /* Ajoute un peu d'espace en haut de la barre de recherche */
+}
+
+.search-form input[type="text"] {
+    padding: 6px; 
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 5px;
+    font-size: 14px;
+    height: 28px; /* Réduit la hauteur de l'input */
+}
+
+.search-form button[type="submit"] {
+    padding: 6px 10px; /* Ajuste le padding */
+    border: none;
+    border-radius: 4px;
+    background-color: #45a049;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    height: 28px; /* Réduit la hauteur du bouton */
+    display: flex; /* Utilisation de flexbox pour centrer le texte verticalement */
+    align-items: center; /* Centre le contenu verticalement */
+}
