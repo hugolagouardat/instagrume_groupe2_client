@@ -76,23 +76,23 @@
 
 									<script>
 										function toggleSupprPhoto(photoId) {
-if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
-fetch(`http://127.0.0.1:3000/api/photos/${photoId}`, {
-method: 'DELETE',
-headers: {
-'Content-Type': 'application/json'
-}
-}).then(response => { // Gérer la réponse de la requête
-if (response.ok) {
-location.reload();
-} else { // Gérer les erreurs en cas de problème lors de la suppression
-console.error('La suppression de la photo a échoué.');
-}
-}).catch(error => { // Gérer les erreurs liées à la requête
-console.error('Erreur lors de la suppression de la photo :', error);
-});
-}
-}
+											if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
+												fetch(`http://127.0.0.1:3000/api/photos/${photoId}`, {
+													method: 'DELETE',
+													headers: {
+														'Content-Type': 'application/json'
+													}
+												}) .then(response => { // Gérer la réponse de la requête
+													if (response.ok) {
+														location.reload();
+													} else { // Gérer les erreurs en cas de problème lors de la suppression
+														console.error('La suppression de la photo a échoué.');
+													}
+												}) .catch(error => { // Gérer les erreurs liées à la requête
+													console.error('Erreur lors de la suppression de la photo :', error);
+												});
+											}
+										}
 									</script>
 
 								</div>
@@ -104,11 +104,11 @@ console.error('Erreur lors de la suppression de la photo :', error);
 
 									<script>
 										function toggleCommentForm(button) {
-const commentForm = $(button).closest('.comments-section').find('.comment-form');
-commentForm.toggle();
-const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
-button.textContent = buttonText;
-}
+											const commentForm = $(button).closest('.comments-section').find('.comment-form');
+											commentForm.toggle();
+											const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
+											button.textContent = buttonText;
+										}
 									</script>
 
 									<div
@@ -152,23 +152,23 @@ button.textContent = buttonText;
 												{# Supprimer un commentaire parent #}
 												<script>
 													function toggleSupprComment(commentId) {
-if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
-fetch(`http://127.0.0.1:3000/api/commentaires/${commentId}`, {
-method: 'DELETE',
-headers: {
-'Content-Type': 'application/json'
-}
-}).then(response => { // Gérer la réponse de la requête
-if (response.ok) {
-location.reload();
-} else { // Gérer les erreurs en cas de problème lors de la suppression
-console.error('La suppression de la photo a échoué.');
-}
-}).catch(error => { // Gérer les erreurs liées à la requête
-console.error('Erreur lors de la suppression de la photo :', error);
-});
-}
-}
+														if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
+															fetch(`http://127.0.0.1:3000/api/commentaires/${commentId}`, {
+																method: 'DELETE',
+																headers: {
+																	'Content-Type': 'application/json'
+																}
+															}) .then(response => { // Gérer la réponse de la requête
+																if (response.ok) {
+																	location.reload();
+																} else { // Gérer les erreurs en cas de problème lors de la suppression
+																	console.error('La suppression de la photo a échoué.');
+																}
+															}) .catch(error => { // Gérer les erreurs liées à la requête
+																console.error('Erreur lors de la suppression de la photo :', error);
+															});
+														}
+													}
 												</script>
 
 												{# Formulaire pour modifier un commentaire parent #}
@@ -183,17 +183,17 @@ console.error('Erreur lors de la suppression de la photo :', error);
 
 												<script>
 													function toggleModifComment(commentId) {
-const commentContent = document.getElementById(`comment-content-${commentId}`);
-const commentForm = document.getElementById(`modif-comment-form-${commentId}`);
+														const commentContent = document.getElementById(`comment-content-${commentId}`);
+														const commentForm = document.getElementById(`modif-comment-form-${commentId}`);
 
-if (commentContent.style.display !== 'none') {
-commentContent.style.display = 'none';
-commentForm.style.display = 'block';
-} else {
-commentContent.style.display = 'block';
-commentForm.style.display = 'none';
-}
-}
+														if (commentContent.style.display !== 'none') {
+															commentContent.style.display = 'none';
+															commentForm.style.display = 'block';
+														} else {
+															commentContent.style.display = 'block';
+															commentForm.style.display = 'none';
+														}
+													}
 												</script>
 
 
@@ -224,9 +224,9 @@ commentForm.style.display = 'none';
 
 												<script>
 													function toggleRepCommentForm(commentId) {
-const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
-repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
-}
+														const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
+														repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+													}
 												</script>
 
 												<!-- Vérification des commentaires enfants -->
@@ -259,23 +259,23 @@ repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block'
 
 																	<script>
 																		function toggleSupprRepComment(childCommentId) {
-if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
-fetch(`http://127.0.0.1:3000/api/commentaires/${childCommentId}`, {
-method: 'DELETE',
-headers: {
-'Content-Type': 'application/json'
-}
-}).then(response => { // Gérer la réponse de la requête
-if (response.ok) {
-location.reload();
-} else { // Gérer les erreurs en cas de problème lors de la suppression
-console.error('La suppression de la photo a échoué.');
-}
-}).catch(error => { // Gérer les erreurs liées à la requête
-console.error('Erreur lors de la suppression de la photo :', error);
-});
-}
-}
+																			if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
+																				fetch(`http://127.0.0.1:3000/api/commentaires/${childCommentId}`, {
+																					method: 'DELETE',
+																					headers: {
+																					'Content-Type': 'application/json'
+																					}
+																				}) .then(response => { // Gérer la réponse de la requête
+																					if (response.ok) {
+																						location.reload();
+																					} else { // Gérer les erreurs en cas de problème lors de la suppression
+																						console.error('La suppression de la photo a échoué.');
+																					}
+																				}) .catch(error => { // Gérer les erreurs liées à la requête
+																					console.error('Erreur lors de la suppression de la photo :', error);
+																				});
+																			}
+																		}
 																	</script>
 
 																	{# Formulaire pour modifier un commentaire parent #}
@@ -290,17 +290,17 @@ console.error('Erreur lors de la suppression de la photo :', error);
 
 																	<script>
 																		function toggleModifRepComment(childCommentId) {
-const commentContent = document.getElementById(`rep-comment-content-${childCommentId}`);
-const commentForm = document.getElementById(`modif-rep-comment-form-${childCommentId}`);
+																			const commentContent = document.getElementById(`rep-comment-content-${childCommentId}`);
+																			const commentForm = document.getElementById(`modif-rep-comment-form-${childCommentId}`);
 
-if (commentContent.style.display !== 'none') {
-commentContent.style.display = 'none';
-commentForm.style.display = 'block';
-} else {
-commentContent.style.display = 'block';
-commentForm.style.display = 'none';
-}
-}
+																			if (commentContent.style.display !== 'none') {
+																				commentContent.style.display = 'none';
+																				commentForm.style.display = 'block';
+																			} else {
+																				commentContent.style.display = 'block';
+																				commentForm.style.display = 'none';
+																			}
+																		}
 																	</script>
 
 																	<!-- Likes pour le commentaire -->
@@ -330,9 +330,9 @@ commentForm.style.display = 'none';
 																	</div>
 																	<script>
 																		function toggleRepRepCommentForm(childCommentId) {
-const repCommentForm = document.getElementById(`rep-rep-comment-form-${childCommentId}`);
-repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
-}
+																			const repCommentForm = document.getElementById(`rep-rep-comment-form-${childCommentId}`);
+																			repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+																			}
 																	</script>
 
 																</div>
