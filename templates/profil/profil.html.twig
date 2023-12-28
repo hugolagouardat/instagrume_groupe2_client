@@ -11,7 +11,9 @@
 				<div
 					class="profile-left">
 					<!-- Photo de profil -->
-					<img src="http://127.0.0.1:3000/images/avatar/{{ actualUser.avatar }}" alt="Profile Picture" class="profile-picture">
+					<div class="card-img-profil">
+						<img src="http://127.0.0.1:3000/images/avatar/{{ actualUser.avatar }}" alt="Profile Picture" class="profile-img">
+					</div>
 				</div>
 				<div
 					class="profile-right">
@@ -40,9 +42,9 @@
 					<p>Aucune photo disponible pour le moment.</p>
 				{% else %}
 					{% for photoUser in allPhotosUser %}
-						<div class="image-item">
+						<a class="image-item" href="{{ path('post', {'photoId': photoUser.id}) }}">
 							<img src="http://127.0.0.1:3000/images/photos/{{ photoUser.image }}" class="card-img" alt="Photo">
-						</div>
+						</a>
 					{% endfor %}
 				{% endif %}
 			</div>

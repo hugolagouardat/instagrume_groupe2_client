@@ -23,9 +23,12 @@
 }
 
 /* Style pour l'image du profil */
-.profile-picture {
-    max-height: 150px;
-    width: auto; /* Redimensionnement automatique en largeur */
+.profile-img {
+    height: 140px;
+    width: 140px; /* Ajustez la largeur pour rendre l'image ronde */
+    border-radius: 50%; /* Arrondir l'image */
+    object-fit: cover; /* Ajuster la taille de l'image sans déformation */
+    border: 2px solid black; /* Ajouter une bordure si nécessaire */
 }
  
 .image-gallery {
@@ -51,7 +54,7 @@
     max-height: 100%; 
     min-width: 90%;
     min-height: 100%;
-    border: 2px solid black;
+    border: 1px solid black;
     object-fit: contain; 
 }
 

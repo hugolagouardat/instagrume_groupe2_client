@@ -1,0 +1,352 @@
+{% extends 'parent.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/accueil.css') }}" type="text/css">
+{% endblock %}
+
+{% block content %}
+	<div class="container with-margin">
+		<div class="row">
+			<div class="col-md-6 col-lg-6 mb-6">
+				<div class="card-center">
+					<div class="card unique">
+						<img src="http://127.0.0.1:3000/images/photos/{{ photo.image }}" class="card-img" alt="Photo">
+						<div class="card-body">
+							<p class="card-text">
+								<button class="like-button" data-photo-id="{{ photo.id }}" data-action="like">
+									<img src="{{ asset('images/like.png') }}" class="image-like">
+								</button>
+								<span id="like-count-{{ photo.id }}">{{ photo.likesCount }}</span>
+								<button class="like-button" data-photo-id="{{ photo.id }}" data-action="dislike">
+									<img src="{{ asset('images/dislike.png') }}" class="image-like">
+								</button>
+								<span id="dislike-count-{{ photo.id }}">{{ photo.dislikesCount }}</span>
+								<span class="date">{{ photo.datePoste }}</span>
+							</p>
+
+							{% if actualUserId == photo.user.id or actualUserRole == "ROLE_ADMIN" %}
+								{% if photo.description != null %}
+									<div class="des-supp-modif">
+										<h5 class="card-title">{{ photo.description }}</h5>
+										<div class="action-button">
+											<button class="suppr-button" onclick="toggleSupprPhoto({{ photo.id }})">
+												<img src="{{ asset('images/poubelle.png') }}" class="image-suppr">
+											</button>
+											<a class="modif-button" href="{{ path('edit_post', {'photoId': photo.id}) }}">
+												<img src="{{ asset('images/modifier.png') }}" class="image-modif">
+											</a>
+										</div>
+									</div>
+									<p class="card-posted">
+										Posté par
+										<strong>@{{ photo.user.username }}</strong>
+									</p>
+								{% else %}
+									<div class="des-supp-modif">
+										<p class="card-posted">
+											Posté par
+											<strong>@{{ photo.user.username }}</strong>
+										</p>
+										<div class="action-button">
+											<button class="suppr-button" onclick="toggleSupprPhoto({{ photo.id }})">
+												<img src="{{ asset('images/poubelle.png') }}" class="image-suppr">
+											</button>
+											<a class="modif-button" href="{{ path('edit_post', {'photoId': photo.id}) }}">
+												<img src="{{ asset('images/modifier.png') }}" class="image-modif">
+											</a>
+										</div>
+									</div>
+								{% endif %}
+							{% else %}
+								<h5 class="card-title">{{ photo.description }}</h5>
+								{% if photo.user %}
+									<p class="card-posted">
+										Posté par
+										<strong>@{{ photo.user.username }}</strong>
+									</p>
+								{% else %}
+									<p class="card-text">Unknown User</p>
+									<!-- Gestion si l'utilisateur est introuvable -->
+								{% endif %}
+							{% endif %}
+
+							<script>
+								function toggleSupprPhoto(photoId) {
+if (confirm("Voulez-vous vraiment supprimer cette photo ?")) {
+fetch (`http://127.0.0.1:3000/api/photos/${photoId}`, {
+method: 'DELETE',
+headers: {
+'Content-Type': 'application/json'
+}
+}).then(response => { // Gérer la réponse de la requête
+if (response.ok) {
+location.reload();
+} else { // Gérer les erreurs en cas de problème lors de la suppression
+console.error('La suppression de la photo a échoué.');
+}
+}).catch(error => { // Gérer les erreurs liées à la requête
+console.error('Erreur lors de la suppression de la photo :', error);
+});
+}
+}
+							</script>
+
+						</div>
+
+						<div class="comments-section">
+							<h6>Commentaires :
+								<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
+							</h6>
+
+							<script>
+								function toggleCommentForm(button) {
+const commentForm = $(button).closest('.comments-section').find('.comment-form');
+commentForm.toggle();
+const buttonText = commentForm.is(':visible') ? "- Cacher l'ajout de commentaire" : '+ Ajouter un commentaire';
+button.textContent = buttonText;
+}
+							</script>
+
+							<div
+								class="comment-form" style="display: none;">
+								<!-- Formulaire pour ajouter un commentaire -->
+								<form action="{{ path('add_comment', {'redirectRoute': 'post', 'photoId': idPhoto}) }}" method="POST">
+									<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+									<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+									<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+									<div class="boutonAjouter">
+										<input type="submit" value="Ajouter">
+									</div>
+								</form>
+							</div>
+
+							{% set commentsForPhoto = allComments|filter(comment => comment.photo.id == photo.id and comment.commentaireParent is empty) %}
+							{% if commentsForPhoto|length > 0 %}
+								{% for comment in commentsForPhoto %}
+
+									<div class="comment">
+										<div class="comment-user-date">
+											<strong class="comment-user">@{{ comment.user.username }}</strong>
+											{% if actualUserId == comment.user.id or actualUserRole == "ROLE_ADMIN" %}
+												<div class="comment-supp-modif">
+													<div class="action-button">
+														<button class="suppr-comment-button" onclick="toggleSupprComment({{ comment.id }})">
+															<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
+														</button>
+														<button class="modif-comment-button" onclick="toggleModifComment({{ comment.id }})">
+															<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
+														</button>
+													</div>
+												</div>
+											{% endif %}
+											<span class="comment-date">{{ comment.dateCommentaire }}</span>
+										</div>
+										<div id="comment-content-{{ comment.id }}">
+											<p class="comment-text">{{ comment.description }}</p>
+										</div>
+
+										{# Supprimer un commentaire parent #}
+										<script>
+											function toggleSupprComment(commentId) {
+if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
+fetch(`http://127.0.0.1:3000/api/commentaires/${commentId}`, {
+method: 'DELETE',
+headers: {
+'Content-Type': 'application/json'
+}
+}).then(response => { // Gérer la réponse de la requête
+if (response.ok) {
+location.reload();
+} else { // Gérer les erreurs en cas de problème lors de la suppression
+console.error('La suppression de la photo a échoué.');
+}
+}).catch(error => { // Gérer les erreurs liées à la requête
+console.error('Erreur lors de la suppression de la photo :', error);
+});
+}
+}
+										</script>
+
+										{# Formulaire pour modifier un commentaire parent #}
+										<div class="modif-comment-form" id="modif-comment-form-{{ comment.id }}" style="display: none;">
+											<form action="{{ path('update_comment', {'commentId': comment.id, 'redirectRoute': 'post', 'photoId': idPhoto}) }}" method="POST">
+												<textarea name="commentaire" rows="4" cols="50">{{ comment.description }}</textarea>
+												<div class="boutonModifier">
+													<input type="submit" value="Modifier">
+												</div>
+											</form>
+										</div>
+
+										<script>
+											function toggleModifComment(commentId) {
+const commentContent = document.getElementById(`comment-content-${commentId}`);
+const commentForm = document.getElementById(`modif-comment-form-${commentId}`);
+
+if (commentContent.style.display !== 'none') {
+commentContent.style.display = 'none';
+commentForm.style.display = 'block';
+} else {
+commentContent.style.display = 'block';
+commentForm.style.display = 'none';
+}
+}
+										</script>
+
+
+										<!-- Likes pour le commentaire -->
+										<div class="comment-likes">
+											<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
+												<img src="{{ asset('images/like.png') }}" class="image-like-commentaire">
+											</button>
+											{{ comment.likesCount }}
+											<button class="like-button" data-comment-id="{{ comment.id }}" data-action="dislike-comment">
+												<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
+											</button>
+											{{ comment.dislikesCount }}
+
+											<button class="rep-comment-button" onclick="toggleRepCommentForm({{ comment.id }})">Répondre</button>
+										</div>
+										<!-- Formulaire pour ajouter une commentaire -->
+										<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">
+											<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote', 'redirectRoute': 'post', 'photoId': idPhoto}) }}" method="POST">
+												<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+												<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+												<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+												<div class="boutonAjouter">
+													<input type="submit" value="Ajouter">
+												</div>
+											</form>
+										</div>
+
+										<script>
+											function toggleRepCommentForm(commentId) {
+const repCommentForm = document.getElementById(`rep-comment-form-${commentId}`);
+repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+}
+										</script>
+
+										<!-- Vérification des commentaires enfants -->
+										{% set childrenComments = allComments|filter(item => item.commentaireParent is not null and item.commentaireParent.id == comment.id) %}
+
+										{% if childrenComments is not empty %}
+											<div class="children-comments">
+												{% for childComment in childrenComments %}
+													<div class="comment-child">
+														<div class="intern-comment">
+															<div class="comment-user-date">
+																<strong class="comment-user">@{{ childComment.user.username }}</strong>
+																{% if actualUserId == childComment.user.id or actualUserRole == "ROLE_ADMIN" %}
+																	<div class="comment-supp-modif">
+																		<div class="action-button">
+																			<button class="suppr-comment-button" onclick="toggleSupprRepComment({{ childComment.id }})">
+																				<img src="{{ asset('images/poubelle2.png') }}" class="image-comment-suppr">
+																			</button>
+																			<button class="modif-rep-comment-button" onclick="toggleModifRepComment({{ childComment.id }})">
+																				<img src="{{ asset('images/modifier2.png') }}" class="image-comment-modif">
+																			</button>
+																		</div>
+																	</div>
+																{% endif %}
+																<span class="comment-child-date">{{ childComment.dateCommentaire }}</span>
+															</div>
+															<div id="rep-comment-content-{{ childComment.id }}">
+																<p class="comment-text">{{ childComment.description }}</p>
+															</div>
+
+															<script>
+																function toggleSupprRepComment(childCommentId) {
+if (confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
+fetch(`http://127.0.0.1:3000/api/commentaires/${childCommentId}`, {
+method: 'DELETE',
+headers: {
+'Content-Type': 'application/json'
+}
+}).then(response => { // Gérer la réponse de la requête
+if (response.ok) {
+location.reload();
+} else { // Gérer les erreurs en cas de problème lors de la suppression
+console.error('La suppression de la photo a échoué.');
+}
+}).catch(error => { // Gérer les erreurs liées à la requête
+console.error('Erreur lors de la suppression de la photo :', error);
+});
+}
+}
+															</script>
+
+															{# Formulaire pour modifier un commentaire parent #}
+															<div class="modif-comment-form" id="modif-rep-comment-form-{{ childComment.id }}" style="display: none;">
+																<form action="{{ path('update_comment', {'commentId': childComment.id, 'redirectRoute': 'post', 'photoId': idPhoto}) }}" method="POST">
+																	<textarea name="commentaire" rows="4" cols="50">{{ childComment.description }}</textarea>
+																	<div class="boutonModifier">
+																		<input type="submit" value="Modifier">
+																	</div>
+																</form>
+															</div>
+
+															<script>
+																function toggleModifRepComment(childCommentId) {
+const commentContent = document.getElementById(`rep-comment-content-${childCommentId}`);
+const commentForm = document.getElementById(`modif-rep-comment-form-${childCommentId}`);
+
+if (commentContent.style.display !== 'none') {
+commentContent.style.display = 'none';
+commentForm.style.display = 'block';
+} else {
+commentContent.style.display = 'block';
+commentForm.style.display = 'none';
+}
+}
+															</script>
+
+															<!-- Likes pour le commentaire -->
+															<div class="comment-likes">
+																<button class="like-button" data-comment-id="{{ comment.id }}" data-action="like-comment">
+																	<img src="{{ asset('images/like.png') }}" class="image-like-commentaire">
+																</button>
+																{{ comment.likesCount }}
+																<button class="like-button" data-comment-id="{{ comment.id }}" data-action="dislike-comment">
+																	<img src="{{ asset('images/dislike.png') }}" class="image-like-commentaire">
+																</button>
+																{{ comment.dislikesCount }}
+																<button class="rep-rep-comment-button" onclick="toggleRepRepCommentForm({{ childComment.id }})">Répondre</button>
+
+															</div>
+
+															<!-- Formulaire pour ajouter une réponse de commentaire -->
+															<div class="rep-rep-comment-form" id="rep-rep-comment-form-{{ childComment.id }}" style="display: none;">
+																<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': childComment.user.username,'redirectRoute': 'post', 'photoId': idPhoto}) }}" method="POST">
+																	<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
+																	<input type="hidden" name="comment_username" value="{{ actualUserName }}">
+																	<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
+																	<div class="boutonAjouter">
+																		<input type="submit" value="Répondre">
+																	</div>
+																</form>
+															</div>
+															<script>
+																function toggleRepRepCommentForm(childCommentId) {
+const repCommentForm = document.getElementById(`rep-rep-comment-form-${childCommentId}`);
+repCommentForm.style.display === 'none' ? repCommentForm.style.display = 'block' : repCommentForm.style.display = 'none';
+}
+															</script>
+
+														</div>
+
+													</div>
+												{% endfor %}
+											</div>
+										{% endif %}
+									</div>
+								{% endfor %}
+							{% else %}
+								<p class="aucun-com">Aucun commentaire pour cette photo !</p>
+							{% endif %}
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

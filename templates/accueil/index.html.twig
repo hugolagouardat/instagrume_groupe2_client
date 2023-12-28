@@ -5,8 +5,6 @@
 {% endblock %}
 
 {% block content %}
-	{{ dump(actualUserName) }}
-	{{ dump(actualUserId) }}
 	<div class="container with-margin">
 		<div class="row">
 			{% if allPhotos is empty %}
@@ -116,7 +114,7 @@ button.textContent = buttonText;
 									<div
 										class="comment-form" style="display: none;">
 										<!-- Formulaire pour ajouter un commentaire -->
-										<form action="{{ path('add_comment') }}" method="POST">
+										<form action="{{ path('add_comment', {'redirectRoute': 'accueil'}) }}" method="POST">
 											<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
 											<input type="hidden" name="comment_username" value="{{ actualUserName }}">
 											<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
@@ -175,7 +173,7 @@ console.error('Erreur lors de la suppression de la photo :', error);
 
 												{# Formulaire pour modifier un commentaire parent #}
 												<div class="modif-comment-form" id="modif-comment-form-{{ comment.id }}" style="display: none;">
-													<form action="{{ path('update_comment', {'commentId': comment.id}) }}" method="POST">
+													<form action="{{ path('update_comment', {'commentId': comment.id, 'redirectRoute': 'accueil'}) }}" method="POST">
 														<textarea name="commentaire" rows="4" cols="50">{{ comment.description }}</textarea>
 														<div class="boutonModifier">
 															<input type="submit" value="Modifier">
@@ -214,7 +212,7 @@ commentForm.style.display = 'none';
 												</div>
 												<!-- Formulaire pour ajouter une commentaire -->
 												<div class="rep-comment-form" id="rep-comment-form-{{ comment.id }}" style="display: none;">
-													<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote'}) }}" method="POST">
+													<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': 'noUserToAnnote', 'redirectRoute': 'accueil'}) }}" method="POST">
 														<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
 														<input type="hidden" name="comment_username" value="{{ actualUserName }}">
 														<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
@@ -282,7 +280,7 @@ console.error('Erreur lors de la suppression de la photo :', error);
 
 																	{# Formulaire pour modifier un commentaire parent #}
 																	<div class="modif-comment-form" id="modif-rep-comment-form-{{ childComment.id }}" style="display: none;">
-																		<form action="{{ path('update_comment', {'commentId': childComment.id}) }}" method="POST">
+																		<form action="{{ path('update_comment', {'commentId': childComment.id, 'redirectRoute': 'accueil'}) }}" method="POST">
 																			<textarea name="commentaire" rows="4" cols="50">{{ childComment.description }}</textarea>
 																			<div class="boutonModifier">
 																				<input type="submit" value="Modifier">
@@ -321,7 +319,7 @@ commentForm.style.display = 'none';
 
 																	<!-- Formulaire pour ajouter une réponse de commentaire -->
 																	<div class="rep-rep-comment-form" id="rep-rep-comment-form-{{ childComment.id }}" style="display: none;">
-																		<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': childComment.user.username}) }}" method="POST">
+																		<form action="{{ path('rep_comment', {'idParentComment': comment.id, 'userToAnnote': childComment.user.username, 'redirectRoute': 'accueil'}) }}" method="POST">
 																			<input type="hidden" name="comment_photo_id" value="{{ photo.id }}">
 																			<input type="hidden" name="comment_username" value="{{ actualUserName }}">
 																			<textarea name="commentaire" rows="4" cols="50" placeholder="Écrivez votre commentaire ici..."></textarea>
