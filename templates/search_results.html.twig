@@ -1,33 +1,41 @@
 {% extends 'parent.html.twig' %}
 
 {% block titre %}
-	Recherche Utilisateur - Instagrume
+    Recherche Utilisateur - Instagrume
 {% endblock %}
 
 {% block stylesheets %}
-	<link rel="stylesheet" href="{{ asset('css/accueil.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/accueil.css') }}" type="text/css">
 {% endblock %}
 
 {% block content %}
-	<div class="container with-margin column">
-		<div class="center">
-			{% if user %}
-				<h2>Résultats de Recherche</h2>
-				<div class="card card-search">
-					<div class="card-body">
-						<a class="d-flex align-items-center" href="{{ path('search_profil', {'userName': user.username}) }}">
-							<img src="http://127.0.0.1:3000/images/avatar/{{ user.avatar }}" class="avatar-img rounded-circle me-2" alt="Avatar" style="width: 40px; height: 40px;">
-							<h5 class="mb-0" style="color:black; margin-left:5px; ">{{ user.username }}</h5>
-						</a>
-					</div>
-				</div>
-
-			{% else %}
-				<h3>"<strong>{{ userSearch }}</strong>" n'a pas été trouvé</h3>
-				<p>Aucun utilisateur correspondant à votre recherche n'a été trouvé.</p>
-			{% endif %}
-		</div>
-	</div>
-
-
+    <div class="container with-margin column">
+        <div class="center">
+            {% if user %}
+                <h2>Résultats de Recherche</h2>
+                <div class="card card-search">
+                    <div class="card-body">
+                        <a class="d-flex align-items-center" href="{{ path('search_profil', {'userName': user.username}) }}">
+                            <img src="http://127.0.0.1:3000/images/avatar/{{ user.avatar }}" class="avatar-img rounded-circle me-2" alt="Avatar" style="width: 40px; height: 40px;">
+                            <h5 class="mb-0" style="color:black; margin-left:5px;">{{ user.username }}</h5>
+                        </a>
+                        {% if actualUserRole == 'ROLE_ADMIN' %}
+                            {% if user.ban %}
+                                <form action="{{ path('handle_ban', {'userId': user.id}) }}" method="post" style="display: inline-block;">
+                                    <button type="submit" class="btn btn-success">Débannir</button>
+                                </form>
+                            {% else %}
+                                <form action="{{ path('handle_ban', {'userId': user.id}) }}" method="post" style="display: inline-block;">
+                                    <button type="submit" class="btn btn-danger">Bannir</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <h3>"<strong>{{ userSearch }}</strong>" n'a pas été trouvé</h3>
+                <p>Aucun utilisateur correspondant à votre recherche n'a été trouvé.</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
