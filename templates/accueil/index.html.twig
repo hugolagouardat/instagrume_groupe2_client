@@ -98,11 +98,18 @@
 								</div>
 
 								<div class="comments-section">
+									{% if not photo.isLocked %}
 									<h6>Commentaires :
-										{% if not photo.isLocked %}
-											<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
-										{% endif %}
+										<button class="comment-button" onclick="toggleCommentForm(this)">+ Ajouter un commentaire</button>
 									</h6>
+									{% else %}
+										<div class="comment-lock">
+											<h6>Commentaires :
+												<img src="{{ asset('images/lock2.png') }}" class="image-lock">
+											</h6>
+										</div>
+									{% endif %}
+									
 									<script>
 										function toggleCommentForm(button) {
 											const commentForm = $(button).closest('.comments-section').find('.comment-form');

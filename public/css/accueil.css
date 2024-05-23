@@ -35,7 +35,7 @@
 .card {
     width: 90%;
     max-width: 90%; 
-    border: 1px solid #4a4a4a;
+    border: 1px solid #000000;
 }
 
 .unique {
@@ -280,7 +280,8 @@
 /* Bouton de modification et suppression */
 
 .image-suppr,
-.image-modif {
+.image-modif,
+.image-lock {
     width: 20px;
 }
 
@@ -301,7 +302,8 @@
     align-items: center;
 }
 
-.action-button {
+.action-button,
+.image-lock {
     display: flex;
     gap: 2px; 
     margin-right: 10px;
@@ -329,4 +331,17 @@
     display: flex;
     justify-content: center;
 }
+
+.comments-section h6 {
+    clear: both; /* Assurez-vous que la hauteur de l'élément est dégagée */
+}
+
+.comments-section .comment-lock {
+    overflow: auto; /* Pour que l'élément conteneur s'ajuste automatiquement à la taille de ses enfants */
+}
+
+.comments-section .comment-lock .image-lock {
+    float: right; /* Place l'image "lock2" à droite */
+}
+
 
